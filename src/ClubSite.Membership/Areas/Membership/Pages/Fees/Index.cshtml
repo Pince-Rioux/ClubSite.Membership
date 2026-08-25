@@ -1,0 +1,47 @@
+@page
+@model ClubSite.Membership.Areas.Membership.Pages.Fees.IndexModel
+@{
+    ViewData["Title"] = "Membership Fees";
+}
+
+<h1>Membership Fees</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<p>
+    <a asp-page="Create" class="btn btn-success">Create New Fee</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Interval</th>
+            <th>Category</th>
+            <th>Default</th>
+            <th>Members</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var fee in Model.Fees)
+        {
+            <tr>
+                <td>@fee.Name</td>
+                <td>@fee.Amount.ToString("C")</td>
+                <td>@fee.Interval</td>
+                <td>@fee.Category</td>
+                <td>@(fee.IsDefault ? "Yes" : "No")</td>
+                <td>@fee.Members.Count</td>
+                <td>
+                    <a asp-page="Edit" asp-route-id="@fee.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-page="Delete" asp-route-id="@fee.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,42 @@
+@page
+@model ClubSite.Membership.Areas.Membership.Pages.Fees.CreateModel
+@{
+    ViewData["Title"] = "Create Membership Fee";
+}
+
+<h1>Create Membership Fee</h1>
+
+<form method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Fee.Name" class="form-label"></label>
+        <input asp-for="Fee.Name" class="form-control" />
+        <span asp-validation-for="Fee.Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Fee.Amount" class="form-label"></label>
+        <input asp-for="Fee.Amount" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Fee.Amount" class="text-danger"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Fee.Interval" class="form-label"></label>
+        <select asp-for="Fee.Interval" asp-items="Model.IntervalOptions" class="form-select"></select>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Fee.Category" class="form-label"></label>
+        <select asp-for="Fee.Category" asp-items="Model.CategoryOptions" class="form-select"></select>
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="Fee.IsDefault" class="form-check-input" />
+            <label asp-for="Fee.IsDefault" class="form-check-label">Default fee for this category</label>
+        </div>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

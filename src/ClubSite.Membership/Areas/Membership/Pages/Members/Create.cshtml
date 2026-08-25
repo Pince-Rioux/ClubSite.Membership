@@ -1,0 +1,98 @@
+@page
+@model ClubSite.Membership.Areas.Membership.Pages.Members.CreateModel
+@{
+    ViewData["Title"] = "Create Member";
+}
+
+<h1>Create Member</h1>
+
+<form method="post" class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="Member.FirstName" class="form-label"></label>
+        <input asp-for="Member.FirstName" class="form-control" />
+        <span asp-validation-for="Member.FirstName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.LastName" class="form-label"></label>
+        <input asp-for="Member.LastName" class="form-control" />
+        <span asp-validation-for="Member.LastName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Email" class="form-label"></label>
+        <input asp-for="Member.Email" class="form-control" />
+        <span asp-validation-for="Member.Email" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Phone" class="form-label"></label>
+        <input asp-for="Member.Phone" class="form-control" />
+        <span asp-validation-for="Member.Phone" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.BirthDate" class="form-label"></label>
+        <input asp-for="Member.BirthDate" class="form-control" type="date" />
+        <span asp-validation-for="Member.BirthDate" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.MembershipFeeId" class="form-label"></label>
+        <select asp-for="Member.MembershipFeeId" asp-items="Model.FeeOptions" class="form-select">
+            <option value="">Select fee...</option>
+        </select>
+        <span asp-validation-for="Member.MembershipFeeId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.DepartmentId" class="form-label"></label>
+        <select asp-for="Member.DepartmentId" asp-items="Model.DepartmentOptions" class="form-select">
+            <option value="">No department</option>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.GuardianMemberId" class="form-label">Guardian</label>
+        <select asp-for="Member.GuardianMemberId" asp-items="Model.GuardianOptions" class="form-select">
+            <option value="">Select guardian...</option>
+        </select>
+        <span asp-validation-for="Member.GuardianMemberId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.FamilyGroupId" class="form-label">Family Group</label>
+        <select asp-for="Member.FamilyGroupId" asp-items="Model.FamilyGroupOptions" class="form-select">
+            <option value="">Select family group...</option>
+        </select>
+        <span asp-validation-for="Member.FamilyGroupId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Street" class="form-label"></label>
+        <input asp-for="Member.Street" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.City" class="form-label"></label>
+        <input asp-for="Member.City" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.ZipCode" class="form-label"></label>
+        <input asp-for="Member.ZipCode" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Country" class="form-label"></label>
+        <input asp-for="Member.Country" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Notes" class="form-label"></label>
+        <textarea asp-for="Member.Notes" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.BankIban" class="form-label"></label>
+        <input asp-for="Member.BankIban" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.BankBic" class="form-label"></label>
+        <input asp-for="Member.BankBic" class="form-control" />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

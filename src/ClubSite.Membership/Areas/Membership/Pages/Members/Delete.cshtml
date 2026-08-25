@@ -1,0 +1,35 @@
+@page "{id:int}"
+@model ClubSite.Membership.Areas.Membership.Pages.Members.DeleteModel
+@{
+    ViewData["Title"] = "Delete Member";
+}
+
+<h1>Delete Member</h1>
+
+<div class="alert alert-warning">
+    <h4 class="alert-heading">Are you sure you want to soft-delete this member?</h4>
+    <p>The member's status will be set to "Former" and they will no longer appear in active listings.</p>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.Member?.LastName, @Model.Member?.FirstName</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Member?.Email</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Member?.Status</dd>
+
+    <dt class="col-sm-3">Department</dt>
+    <dd class="col-sm-9">@(Model.Member?.Department?.Name ?? "-")</dd>
+
+    <dt class="col-sm-3">Joined</dt>
+    <dd class="col-sm-9">@(Model.Member != null ? Model.Member.JoinedAt.ToShortDateString() : "")</dd>
+</dl>
+
+<form method="post">
+    <input type="hidden" asp-for="Member.Id" />
+    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>

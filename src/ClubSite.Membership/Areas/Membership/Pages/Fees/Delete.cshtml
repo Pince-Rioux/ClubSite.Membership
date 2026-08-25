@@ -1,0 +1,48 @@
+@page "{id:int}"
+@model ClubSite.Membership.Areas.Membership.Pages.Fees.DeleteModel
+@{
+    ViewData["Title"] = "Delete Membership Fee";
+}
+
+<h1>Delete Membership Fee</h1>
+
+<div class="alert alert-danger">
+    <h4 class="alert-heading">Are you sure you want to delete this membership fee?</h4>
+    @if (Model.MemberCount > 0)
+    {
+        <p><strong>Warning:</strong> This fee is assigned to <strong>@Model.MemberCount active member(s)</strong>. You cannot delete it until all members are reassigned.</p>
+    }
+    else
+    {
+        <p>This action cannot be undone.</p>
+    }
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.Fee.Name</dd>
+
+    <dt class="col-sm-3">Amount</dt>
+    <dd class="col-sm-9">@Model.Fee.Amount.ToString("C")</dd>
+
+    <dt class="col-sm-3">Interval</dt>
+    <dd class="col-sm-9">@Model.Fee.Interval</dd>
+
+    <dt class="col-sm-3">Category</dt>
+    <dd class="col-sm-9">@Model.Fee.Category</dd>
+
+    <dt class="col-sm-3">Default</dt>
+    <dd class="col-sm-9">@(Model.Fee.IsDefault ? "Yes" : "No")</dd>
+
+    <dt class="col-sm-3">Members</dt>
+    <dd class="col-sm-9">@Model.MemberCount active</dd>
+</dl>
+
+<form method="post">
+    <input type="hidden" asp-for="Fee.Id" />
+    @if (Model.MemberCount == 0)
+    {
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+    }
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,15 @@
+## .NET build artifacts
+bin/
+obj/
+
+## IDE
+.vs/
+*.user
+*.suo
+
+## ClubSite integration
+Secrets/
+DataProtectionKeys/
+
+## OS
+.DS_Store
