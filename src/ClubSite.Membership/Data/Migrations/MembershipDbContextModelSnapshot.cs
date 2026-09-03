@@ -110,6 +110,49 @@ namespace ClubSite.Membership.Data.Migrations
                     b.ToTable("FamilyGroup", "Membership");
                 });
 
+            modelBuilder.Entity("ClubSite.Membership.Models.Invitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email");
+
+                    b.HasIndex("MemberId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("Invitations", "Membership");
+                });
+
             modelBuilder.Entity("ClubSite.Membership.Models.Member", b =>
                 {
                     b.Property<int>("Id")
@@ -119,12 +162,12 @@ namespace ClubSite.Membership.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BankBic")
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("BankIban")
-                        .HasMaxLength(34)
-                        .HasColumnType("nvarchar(34)");
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -258,6 +301,17 @@ namespace ClubSite.Membership.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MembershipFee", "Membership");
+                });
+
+            modelBuilder.Entity("ClubSite.Membership.Models.Invitation", b =>
+                {
+                    b.HasOne("ClubSite.Membership.Models.Member", "Member")
+                        .WithMany()
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
                 });
 
             modelBuilder.Entity("ClubSite.Membership.Models.Member", b =>

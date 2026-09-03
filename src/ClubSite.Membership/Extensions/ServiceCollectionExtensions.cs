@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IAuditService, AuditService>();
+        services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IValidator<Member>, MemberValidator>();
 
         // Add AES-256-GCM encryption for sensitive personal data

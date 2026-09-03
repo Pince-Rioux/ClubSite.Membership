@@ -12,6 +12,7 @@ public class MembershipDbContext : DbContext
     public DbSet<MembershipFee> MembershipFees => Set<MembershipFee>();
     public DbSet<FamilyGroup> FamilyGroups => Set<FamilyGroup>();
     public DbSet<AuditEntry> AuditLog => Set<AuditEntry>();
+    public DbSet<Invitation> Invitations => Set<Invitation>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

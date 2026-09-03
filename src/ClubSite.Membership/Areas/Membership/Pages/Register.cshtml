@@ -1,0 +1,177 @@
+@page "/Membership/Register"
+@model ClubSite.Membership.Areas.Membership.Pages.RegisterModel
+@{
+    ViewData["Title"] = "Mitglied werden";
+}
+
+<h1>Mitglied werden</h1>
+<p class="text-muted">Registrieren Sie sich selbst — Sie erhalten anschließend eine E-Mail mit einem Link, um Ihr Passwort zu setzen.</p>
+
+<form method="post" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="col-12">
+        <h5 class="border-bottom pb-2">Persönliche Daten</h5>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Member.FirstName" class="form-label"></label>
+        <input asp-for="Member.FirstName" class="form-control" />
+        <span asp-validation-for="Member.FirstName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.LastName" class="form-label"></label>
+        <input asp-for="Member.LastName" class="form-control" />
+        <span asp-validation-for="Member.LastName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Email" class="form-label"></label>
+        <input asp-for="Member.Email" class="form-control" type="email" />
+        <span asp-validation-for="Member.Email" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Phone" class="form-label"></label>
+        <input asp-for="Member.Phone" class="form-control" type="tel" />
+        <span asp-validation-for="Member.Phone" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.BirthDate" class="form-label"></label>
+        <input asp-for="Member.BirthDate" class="form-control" type="date" />
+        <span asp-validation-for="Member.BirthDate" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.MembershipFeeId" class="form-label">Beitragsgruppe</label>
+        <select asp-for="Member.MembershipFeeId" asp-items="Model.FeeOptions" class="form-select">
+            <option value="">Bitte wählen…</option>
+        </select>
+        <span asp-validation-for="Member.MembershipFeeId" class="text-danger"></span>
+    </div>
+
+    @* Guardian section (shown when Youth is selected) *@
+    <div class="col-12" id="guardianSection" style="display:none">
+        <h5 class="border-bottom pb-2">Erziehungsberechtigter</h5>
+        <p class="text-muted">Da Sie unter 18 Jahren sind, benötigen wir die Daten eines Erziehungsberechtigten.</p>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="GuardianFirstName" class="form-label">Vorname</label>
+                <input asp-for="GuardianFirstName" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="GuardianLastName" class="form-label">Nachname</label>
+                <input asp-for="GuardianLastName" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="GuardianEmail" class="form-label">E-Mail</label>
+                <input asp-for="GuardianEmail" class="form-control" type="email" />
+            </div>
+        </div>
+    </div>
+
+    @* Family section (shown when Family is selected) *@
+    <div class="col-12" id="familySection" style="display:none">
+        <h5 class="border-bottom pb-2">Familienmitglieder</h5>
+        <p class="text-muted">Fügen Sie weitere Familienmitglieder hinzu. Sie sind als Hauptmitglied automatisch Teil dieser Familie.</p>
+
+        <div id="familyMembersContainer">
+            <div id="familyMemberTemplate" class="family-member-row row g-2 mb-2 p-2 border rounded" style="display:none">
+                <div class="col-md-3">
+                    <input name="FamilyMembers[INDEX].FirstName" class="form-control form-control-sm" placeholder="Vorname" />
+                </div>
+                <div class="col-md-3">
+                    <input name="FamilyMembers[INDEX].LastName" class="form-control form-control-sm" placeholder="Nachname" />
+                </div>
+                <div class="col-md-3">
+                    <input name="FamilyMembers[INDEX].Email" class="form-control form-control-sm" type="email" placeholder="E-Mail" />
+                </div>
+                <div class="col-md-2">
+                    <input name="FamilyMembers[INDEX].BirthDate" class="form-control form-control-sm" type="date" />
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-family-row" title="Entfernen">&times;</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-sm btn-outline-primary" id="addFamilyMemberBtn">
+            + Familienmitglied hinzufügen
+        </button>
+        <hr />
+    </div>
+
+    <div class="col-12">
+        <h5 class="border-bottom pb-2">Adresse</h5>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Member.Street" class="form-label"></label>
+        <input asp-for="Member.Street" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.ZipCode" class="form-label"></label>
+        <input asp-for="Member.ZipCode" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.City" class="form-label"></label>
+        <input asp-for="Member.City" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Country" class="form-label"></label>
+        <input asp-for="Member.Country" class="form-control" />
+    </div>
+
+    <div class="col-12 mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">Registrieren</button>
+        <a href="/" class="btn btn-outline-secondary btn-lg">Abbrechen</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const feeSelect = document.getElementById('Member_MembershipFeeId');
+            const guardianSection = document.getElementById('guardianSection');
+            const familySection = document.getElementById('familySection');
+            const familyContainer = document.getElementById('familyMembersContainer');
+            const template = document.getElementById('familyMemberTemplate');
+            const addBtn = document.getElementById('addFamilyMemberBtn');
+            let familyMemberIndex = 0;
+
+            function getSelectedFeeCategory() {
+                const selectedOption = feeSelect.options[feeSelect.selectedIndex];
+                if (!selectedOption || !selectedOption.parentElement) return null;
+                return selectedOption.parentElement.getAttribute('label') || null;
+            }
+
+            function toggleSections() {
+                const category = getSelectedFeeCategory();
+                guardianSection.style.display = (category === 'Youth') ? 'block' : 'none';
+                familySection.style.display = (category === 'Family') ? 'block' : 'none';
+            }
+
+            function addFamilyMemberRow() {
+                const clone = template.cloneNode(true);
+                clone.style.display = 'flex';
+                clone.removeAttribute('id');
+
+                const index = familyMemberIndex++;
+                clone.querySelectorAll('input').forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name) {
+                        input.setAttribute('name', name.replace('INDEX', index));
+                    }
+                });
+
+                clone.querySelector('.remove-family-row').addEventListener('click', function () {
+                    clone.remove();
+                });
+
+                familyContainer.appendChild(clone);
+            }
+
+            feeSelect.addEventListener('change', toggleSections);
+            addBtn.addEventListener('click', addFamilyMemberRow);
+            toggleSections();
+        });
+    </script>
+}
