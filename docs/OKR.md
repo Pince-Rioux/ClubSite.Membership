@@ -46,39 +46,18 @@
 | KR 4.3 | All controllers tested via WebApplicationFactory | CRUD endpoints return expected status codes | ❌ Phase 2 |
 | KR 4.4 | CI pipeline build + test passes | GitHub Actions workflow succeeds | ❌ Phase 2 |
 
----
+## Objective 5: Self-service registration & admin invitation flow for new members
 
-## Objective 2: Member data protected to the highest security and DSGVO standards
+**Owner:** ClubSite development team
+**Timeframe:** Next sprint
 
-| Key Result | Measure | Target |
-|---|---|---|
-| KR 2.1 | Data minimization enforced | Only required fields stored; configurable field sets |
-| KR 2.2 | Purpose limitation documented per field | Field-level annotation in data dictionary |
-| KR 2.3 | Retention and deletion policy defined | Documented policy + soft-delete with purge scheduling |
-| KR 2.4 | Access control: role-based authorization | Minimum 3 roles (Admin, Editor, Viewer) enforced on all endpoints |
-| KR 2.5 | DSGVO data export & erasure endpoints | REST endpoints for member data export (JSON) and erasure |
-| KR 2.6 | Encryption at rest (SQL Server TDE or column-level) | Documented and verified |
-| KR 2.7 | Audit log for all member data mutations | Every create/update/delete logged with timestamp, user, field diff |
-| KR 2.8 | Guardian relationship data handled per DSGVO Art. 32 | Guardian links are audited; family group data protected by same retention policy |
+| Key Result | Measure | Target | Status |
+|---|---|---|---|
+| KR 5.1 | Public self-service registration with Magic-Link | Visitor registers via `/Membership/Register`, receives confirmation email with Magic-Link, sets password, becomes Active | ❌ Not started |
+| KR 5.2 | Admin invitation flow | Admin creates member(s) via `/Membership/Members/Invite`, system sends invitation email with Magic-Link to each new member | ❌ Not started |
+| KR 5.3 | Family registration: admin can add multiple family members inline | When creating member(s) with FeeCategory = Family, admin can add ≥2 members in one form; all get individual Magic-Links | ❌ Not started |
+| KR 5.4 | Invitation token service | Cryptographically secure tokens with 7-day expiry; token validated on acceptance; status transitions Pending → Active | ❌ Not started |
+| KR 5.5 | Login/Logout UI for members | Login page, logout, password-reset via Piranha Identity (shared auth) | ❌ Not started |
+| KR 5.6 | Self-service profile editing | Member can update own personal info, address, contact data, emergency contact (except identity-critical and admin-controlled fields) | ❌ Not started |
+| KR 5.7 | Admin dashboard shows Pending members | Admin sees new registrations with status Pending; can view details before member activated | ❌ Not started |
 
----
-
-## Objective 3: Architecture enables future extraction or independent deployment
-
-| Key Result | Measure | Target |
-|---|---|---|
-| KR 3.1 | Membership is a standalone Razor Class Library | Can be built and tested without ClubSite host project |
-| KR 3.2 | All business logic behind service interfaces | Every controller/page depends on interface, not concrete |
-| KR 3.3 | Own DbContext in own DB schema | Zero table name collisions with Piranha |
-| KR 3.4 | REST API layer exists alongside Razor Pages | API controllers return structured JSON, not HTML redirects |
-
----
-
-## Objective 4: Maintainable, tested codebase
-
-| Key Result | Measure | Target |
-|---|---|---|
-| KR 4.1 | Unit test coverage for all service methods | ≥ 80% line coverage on Services/ |
-| KR 4.2 | Integration tests for DbContext queries | All queries tested against real SQL Server (or LocalDB) |
-| KR 4.3 | All controllers tested via WebApplicationFactory | CRUD endpoints return expected status codes |
-| KR 4.4 | CI pipeline build + test passes | GitHub Actions workflow succeeds |
