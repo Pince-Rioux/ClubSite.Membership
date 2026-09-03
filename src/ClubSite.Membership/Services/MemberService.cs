@@ -25,6 +25,17 @@ public class MemberService(MembershipDbContext context, IAuditService auditServi
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
+    public async Task<Member?> GetByEmailAsync(string email)
+    {
+        return await context.Members
+            .Include(m => m.Department)
+            .Include(m => m.MembershipFee)
+            .Include(m => m.GuardianMember)
+            .Include(m => m.FamilyGroup)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Email == email);
+    }
+
     public async Task<List<Member>> GetAllAsync()
     {
         return await context.Members
@@ -253,6 +264,64 @@ public class MemberService(MembershipDbContext context, IAuditService auditServi
             member.CreatedBy);
 
         return member;
+    }
+
+    public async Task<Member> UpdateOwnProfileAsync(int id, Member updated, string performedBy)
+    {
+        var existing = await context.Members
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == id)
+            ?? throw new KeyNotFoundException($"Member with Id {id} not found.");
+
+        // Only allow editing these fields
+        existing.FirstName = updated.FirstName;
+        existing.LastName = updated.LastName;
+        existing.Phone = updated.Phone;
+        existing.Street = updated.Street;
+        existing.City = updated.City;
+        existing.ZipCode = updated.ZipCode;
+        existing.Country = updated.Country;
+        existing.Notes = updated.Notes;
+        existing.UpdatedAt = DateTime.UtcNow;
+
+        // Reject any attempts to change restricted fields
+        if (existing.Email != updated.Email)
+            throw new InvalidOperationException("Email cannot be changed through profile editing.");
+        if (existing.BirthDate != updated.BirthDate)
+            throw new InvalidOperationException("Birth date cannot be changed through profile editing.");
+        if (existing.MembershipFeeId != updated.MembershipFeeId)
+            throw new InvalidOperationException("Membership fee cannot be changed through profile editing.");
+        if (existing.DepartmentId != updated.DepartmentId)
+            throw new InvalidOperationException("Department cannot be changed through profile editing.");
+        if (existing.GuardianMemberId != updated.GuardianMemberId)
+            throw new InvalidOperationException("Guardian cannot be changed through profile editing.");
+        if (existing.FamilyGroupId != updated.FamilyGroupId)
+            throw new InvalidOperationException("Family group cannot be changed through profile editing.");
+        if (existing.BankIban != updated.BankIban || existing.BankBic != updated.BankBic)
+            throw new InvalidOperationException("Bank details cannot be changed through profile editing.");
+        if (existing.Status != updated.Status)
+            throw new InvalidOperationException("Status cannot be changed through profile editing.");
+
+        var oldValues = existing.ToJson();
+
+        context.Members.Update(existing);
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new InvalidOperationException("The record was modified by another user. Please reload and try again.");
+        }
+
+        await auditService.LogAsync(
+            nameof(Member), existing.Id, "ProfileUpdated",
+            oldValues, existing.ToJson(),
+            "FirstName,LastName,Phone,Street,City,ZipCode,Country,Notes",
+            performedBy);
+
+        return existing;
     }
 
     public async Task<bool> SoftDeleteAsync(int id, string performedBy)

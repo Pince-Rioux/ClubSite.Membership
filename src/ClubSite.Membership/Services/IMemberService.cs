@@ -5,6 +5,13 @@ namespace ClubSite.Membership.Services;
 public interface IMemberService
 {
     Task<Member?> GetByIdAsync(int id);
+
+    /// <summary>
+    /// Finds a member by their email address. Returns null if not found.
+    /// Used for self-service profile lookup after login.
+    /// </summary>
+    Task<Member?> GetByEmailAsync(string email);
+
     Task<List<Member>> GetAllAsync();
     Task<(List<Member> Items, int TotalCount)> SearchAsync(
         string? searchTerm, MemberStatus? status, int? departmentId,
@@ -19,6 +26,13 @@ public interface IMemberService
     Task<List<Member>> CreateFamilyAsync(Member mainMember, List<Member> familyMembers, string createdBy);
 
     Task<Member> UpdateAsync(Member member);
+
+    /// <summary>
+    /// Updates only the fields a member is allowed to edit themselves:
+    /// FirstName, LastName, Phone, Street, City, ZipCode, Country, Notes.
+    /// Throws if the caller tries to set restricted fields.
+    /// </summary>
+    Task<Member> UpdateOwnProfileAsync(int id, Member updated, string performedBy);
     Task<bool> SoftDeleteAsync(int id, string performedBy);
 
     // Guardian methods
