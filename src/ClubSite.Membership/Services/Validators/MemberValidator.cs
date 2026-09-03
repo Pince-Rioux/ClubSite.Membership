@@ -74,13 +74,16 @@ public class MemberValidator : AbstractValidator<Member>
             .NotEqual(m => m.Id).WithMessage("A member cannot be their own guardian.")
             .When(m => m.GuardianMemberId.HasValue);
 
-        // Category-specific: Family group required for Family
+        // Note: FamilyGroupId is validated and set programmatically in CreateFamilyAsync.
+        // The Create form shows inline sub-member rows instead of a FamilyGroup dropdown,
+        // so this rule is not enforced at the validator level for Family members.
+        // For non-Family members, FamilyGroupId must stay null.
         RuleFor(m => m.FamilyGroupId)
-            .NotEmpty().WithMessage("A family group is required for Family members.")
+            .Null().WithMessage("Family group should not be set for non-Family members.")
             .WhenAsync(async (m, _) =>
             {
                 var fee = await GetFeeAsync(m.MembershipFeeId);
-                return fee?.Category == FeeCategory.Family;
+                return fee?.Category != FeeCategory.Family;
             });
     }
 

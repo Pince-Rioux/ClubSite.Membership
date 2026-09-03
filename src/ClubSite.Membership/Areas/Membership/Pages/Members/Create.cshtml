@@ -7,6 +7,7 @@
 <h1>Create Member</h1>
 
 <form method="post" class="row g-3">
+    @* Main member fields *@
     <div class="col-md-6">
         <label asp-for="Member.FirstName" class="form-label"></label>
         <input asp-for="Member.FirstName" class="form-control" />
@@ -33,7 +34,7 @@
         <span asp-validation-for="Member.BirthDate" class="text-danger"></span>
     </div>
     <div class="col-md-4">
-        <label asp-for="Member.MembershipFeeId" class="form-label"></label>
+        <label asp-for="Member.MembershipFeeId" class="form-label">Fee / Category</label>
         <select asp-for="Member.MembershipFeeId" asp-items="Model.FeeOptions" class="form-select">
             <option value="">Select fee...</option>
         </select>
@@ -45,20 +46,51 @@
             <option value="">No department</option>
         </select>
     </div>
-    <div class="col-md-6">
+
+    @* Guardian (only for Youth) *@
+    <div class="col-md-6" id="guardianSection" style="display:none">
         <label asp-for="Member.GuardianMemberId" class="form-label">Guardian</label>
         <select asp-for="Member.GuardianMemberId" asp-items="Model.GuardianOptions" class="form-select">
             <option value="">Select guardian...</option>
         </select>
         <span asp-validation-for="Member.GuardianMemberId" class="text-danger"></span>
     </div>
-    <div class="col-md-6">
-        <label asp-for="Member.FamilyGroupId" class="form-label">Family Group</label>
-        <select asp-for="Member.FamilyGroupId" asp-items="Model.FamilyGroupOptions" class="form-select">
-            <option value="">Select family group...</option>
-        </select>
-        <span asp-validation-for="Member.FamilyGroupId" class="text-danger"></span>
+
+    @* Family members section (only for Family) *@
+    <div class="col-12" id="familySection" style="display:none">
+        <hr />
+        <h5>Family Members</h5>
+        <p class="text-muted">Add additional family members. The main member above is automatically part of this family.</p>
+
+        <div id="familyMembersContainer">
+            @* Template row — hidden, used for cloning *@
+            <div id="familyMemberTemplate" class="family-member-row row g-2 mb-2 p-2 border rounded" style="display:none">
+                <div class="col-md-3">
+                    <input name="FamilyMembers[INDEX].FirstName" class="form-control form-control-sm" placeholder="Vorname" />
+                </div>
+                <div class="col-md-3">
+                    <input name="FamilyMembers[INDEX].LastName" class="form-control form-control-sm" placeholder="Nachname" />
+                </div>
+                <div class="col-md-3">
+                    <input name="FamilyMembers[INDEX].Email" class="form-control form-control-sm" type="email" placeholder="E-Mail" />
+                </div>
+                <div class="col-md-2">
+                    <input name="FamilyMembers[INDEX].BirthDate" class="form-control form-control-sm" type="date" />
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-family-row" title="Remove">&times;</button>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-sm btn-outline-primary" id="addFamilyMemberBtn">
+            + Add family member
+        </button>
+        <div id="familyMemberErrors" class="text-danger mt-1"></div>
+        <hr />
     </div>
+
+    @* Address fields *@
     <div class="col-md-6">
         <label asp-for="Member.Street" class="form-label"></label>
         <input asp-for="Member.Street" class="form-control" />
@@ -95,4 +127,95 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const feeSelect = document.getElementById('Member_MembershipFeeId');
+            const guardianSection = document.getElementById('guardianSection');
+            const familySection = document.getElementById('familySection');
+            const familyContainer = document.getElementById('familyMembersContainer');
+            const template = document.getElementById('familyMemberTemplate');
+            const addBtn = document.getElementById('addFamilyMemberBtn');
+            let familyMemberIndex = @Model.FamilyMembers.Count;
+
+            // Get fee category data from optgroup labels
+            function getSelectedFeeCategory() {
+                const selectedOption = feeSelect.options[feeSelect.selectedIndex];
+                if (!selectedOption || !selectedOption.parentElement) return null;
+                const groupLabel = selectedOption.parentElement.getAttribute('label');
+                return groupLabel || null;
+            }
+
+            function toggleSections() {
+                const category = getSelectedFeeCategory();
+
+                // Guardian: show only for Youth
+                if (category === 'Youth') {
+                    guardianSection.style.display = 'block';
+                } else {
+                    guardianSection.style.display = 'none';
+                }
+
+                // Family: show only for Family
+                if (category === 'Family') {
+                    familySection.style.display = 'block';
+                } else {
+                    familySection.style.display = 'none';
+                }
+            }
+
+            // Add a new family member row
+            function addFamilyMemberRow(data) {
+                data = data || {};
+                const clone = template.cloneNode(true);
+                clone.style.display = 'flex';
+                clone.removeAttribute('id');
+
+                const index = familyMemberIndex++;
+
+                // Fix field names
+                clone.querySelectorAll('input').forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name) {
+                        input.setAttribute('name', name.replace('INDEX', index));
+                        input.setAttribute('id', 'FamilyMembers_' + index + '_' + input.name.split('.').pop());
+                    }
+                });
+
+                // Pre-fill if editing
+                if (data.firstName) clone.querySelector('[placeholder="Vorname"]').value = data.firstName;
+                if (data.lastName) clone.querySelector('[placeholder="Nachname"]').value = data.lastName;
+                if (data.email) clone.querySelector('[placeholder="E-Mail"]').value = data.email;
+                if (data.birthDate) clone.querySelector('[type="date"]').value = data.birthDate;
+
+                // Remove button
+                clone.querySelector('.remove-family-row').addEventListener('click', function () {
+                    clone.remove();
+                });
+
+                familyContainer.appendChild(clone);
+            }
+
+            // Pre-populate existing family members (from server-side validation failures)
+            @foreach (var fm in Model.FamilyMembers)
+            {
+                <text>
+                addFamilyMemberRow({
+                    firstName: '@fm.FirstName',
+                    lastName: '@fm.LastName',
+                    email: '@fm.Email',
+                    birthDate: '@fm.BirthDate.ToString("yyyy-MM-dd")'
+                });
+                </text>
+            }
+
+            // Event listeners
+            feeSelect.addEventListener('change', toggleSections);
+            addBtn.addEventListener('click', function () {
+                addFamilyMemberRow({});
+            });
+
+            // Initial toggle
+            toggleSections();
+        });
+    </script>
 }

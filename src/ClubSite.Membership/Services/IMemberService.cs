@@ -10,6 +10,14 @@ public interface IMemberService
         string? searchTerm, MemberStatus? status, int? departmentId,
         FeeCategory? feeCategory, int page, int pageSize);
     Task<Member> CreateAsync(Member member, string createdBy);
+
+    /// <summary>
+    /// Creates a family group with the main member and additional family members.
+    /// FamilyGroup is created automatically; all members get FamilyGroupId set.
+    /// Requires at least 2 members (main + at least 1 additional).
+    /// </summary>
+    Task<List<Member>> CreateFamilyAsync(Member mainMember, List<Member> familyMembers, string createdBy);
+
     Task<Member> UpdateAsync(Member member);
     Task<bool> SoftDeleteAsync(int id, string performedBy);
 

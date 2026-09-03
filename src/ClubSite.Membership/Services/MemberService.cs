@@ -133,6 +133,61 @@ public class MemberService(MembershipDbContext context, IAuditService auditServi
         return member;
     }
 
+    public async Task<List<Member>> CreateFamilyAsync(Member mainMember, List<Member> familyMembers, string createdBy)
+    {
+        var fee = await context.MembershipFees
+            .AsNoTracking()
+            .FirstOrDefaultAsync(f => f.Id == mainMember.MembershipFeeId)
+            ?? throw new InvalidOperationException("Selected membership fee not found.");
+
+        if (fee.Category != FeeCategory.Family)
+            throw new InvalidOperationException("CreateFamilyAsync requires FeeCategory.Family.");
+
+        var allMembers = new List<Member> { mainMember };
+        allMembers.AddRange(familyMembers);
+
+        if (allMembers.Count < 2)
+            throw new InvalidOperationException("A family group requires at least 2 members.");
+
+        var now = DateTime.UtcNow;
+
+        // Create family group
+        var group = new FamilyGroup
+        {
+            Name = $"Familie {mainMember.LastName}",
+            CreatedAt = now
+        };
+        context.FamilyGroups.Add(group);
+        await context.SaveChangesAsync();
+
+        // Create all members with the same FamilyGroupId
+        foreach (var member in allMembers)
+        {
+            member.FamilyGroupId = group.Id;
+            member.CreatedAt = now;
+            member.UpdatedAt = now;
+            member.CreatedBy = createdBy;
+            member.JoinedAt = now;
+            member.Status = MemberStatus.Active;
+            member.GuardianMemberId = null; // Family category cannot be Youth
+
+            context.Members.Add(member);
+        }
+
+        await context.SaveChangesAsync();
+
+        // Audit each member creation
+        foreach (var member in allMembers)
+        {
+            await auditService.LogAsync(
+                nameof(Member), member.Id, "Created",
+                null, member.ToJson(),
+                nameof(Member), createdBy);
+        }
+
+        return allMembers;
+    }
+
     public async Task<Member> UpdateAsync(Member member)
     {
         var existing = await context.Members
