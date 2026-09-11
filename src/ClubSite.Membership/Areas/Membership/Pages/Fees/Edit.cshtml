@@ -1,10 +1,10 @@
 @page "{id:int}"
 @model ClubSite.Membership.Areas.Membership.Pages.Fees.EditModel
 @{
-    ViewData["Title"] = "Edit Membership Fee";
+    ViewData["Title"] = "Beitragsgruppe bearbeiten";
 }
 
-<h1>Edit Membership Fee</h1>
+<h1>Beitragsgruppe bearbeiten</h1>
 
 <form method="post" class="row g-3">
     <input type="hidden" asp-for="Fee.Id" />
@@ -30,12 +30,12 @@
     <div class="col-md-4 d-flex align-items-end">
         <div class="form-check">
             <input asp-for="Fee.IsDefault" class="form-check-input" />
-            <label asp-for="Fee.IsDefault" class="form-check-label">Default fee for this category</label>
+            <label asp-for="Fee.IsDefault" class="form-check-label">Standardbeitrag für diese Kategorie</label>
         </div>
     </div>
     <div class="col-12">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
     </div>
 </form>
 

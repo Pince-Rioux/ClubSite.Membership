@@ -1,10 +1,10 @@
 @page "{id:int}"
 @model ClubSite.Membership.Areas.Membership.Pages.Departments.EditModel
 @{
-    ViewData["Title"] = "Edit Department";
+    ViewData["Title"] = "Abteilung bearbeiten";
 }
 
-<h1>Edit Department</h1>
+<h1>Abteilung bearbeiten</h1>
 
 <form method="post" class="row g-3">
     <input type="hidden" asp-for="Department.Id" />
@@ -15,12 +15,12 @@
         <span asp-validation-for="Department.Name" class="text-danger"></span>
     </div>
     <div class="col-md-6">
-        <label asp-for="Department.Description" class="form-label">Description</label>
+        <label asp-for="Department.Description" class="form-label"></label>
         <input asp-for="Department.Description" class="form-control" />
     </div>
     <div class="col-12">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
     </div>
 </form>
 

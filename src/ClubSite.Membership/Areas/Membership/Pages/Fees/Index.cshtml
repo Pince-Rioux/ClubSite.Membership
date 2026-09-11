@@ -1,10 +1,10 @@
 @page
 @model ClubSite.Membership.Areas.Membership.Pages.Fees.IndexModel
 @{
-    ViewData["Title"] = "Membership Fees";
+    ViewData["Title"] = "Beitragsgruppen";
 }
 
-<h1>Membership Fees</h1>
+<h1>Beitragsgruppen</h1>
 
 @if (TempData["Success"] != null)
 {
@@ -12,17 +12,17 @@
 }
 
 <p>
-    <a asp-page="Create" class="btn btn-success">Create New Fee</a>
+    <a asp-page="Create" class="btn btn-success">Neue Beitragsgruppe</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Name</th>
-            <th>Amount</th>
-            <th>Interval</th>
-            <th>Category</th>
-            <th>Default</th>
+            <th>Betrag</th>
+            <th>Intervall</th>
+            <th>Kategorie</th>
+            <th>Standard</th>
             <th>Members</th>
             <th></th>
         </tr>
@@ -35,11 +35,11 @@
                 <td>@fee.Amount.ToString("C")</td>
                 <td>@fee.Interval</td>
                 <td>@fee.Category</td>
-                <td>@(fee.IsDefault ? "Yes" : "No")</td>
+                <td>@(fee.IsDefault ? "Ja" : "Nein")</td>
                 <td>@fee.Members.Count</td>
                 <td>
-                    <a asp-page="Edit" asp-route-id="@fee.Id" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-page="Delete" asp-route-id="@fee.Id" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-page="Edit" asp-route-id="@fee.Id" class="btn btn-sm btn-warning">Bearbeiten</a>
+                    <a asp-page="Delete" asp-route-id="@fee.Id" class="btn btn-sm btn-danger">Löschen</a>
                 </td>
             </tr>
         }

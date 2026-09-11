@@ -1,10 +1,10 @@
 @page
 @model ClubSite.Membership.Areas.Membership.Pages.Departments.CreateModel
 @{
-    ViewData["Title"] = "Create Department";
+    ViewData["Title"] = "Abteilung anlegen";
 }
 
-<h1>Create Department</h1>
+<h1>Abteilung anlegen</h1>
 
 <form method="post" class="row g-3">
     <div class="col-md-6">
@@ -13,12 +13,12 @@
         <span asp-validation-for="Department.Name" class="text-danger"></span>
     </div>
     <div class="col-md-6">
-        <label asp-for="Department.Description" class="form-label">Description</label>
+        <label asp-for="Department.Description" class="form-label"></label>
         <input asp-for="Department.Description" class="form-control" />
     </div>
     <div class="col-12">
-        <button type="submit" class="btn btn-primary">Create</button>
-        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Anlegen</button>
+        <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
     </div>
 </form>
 

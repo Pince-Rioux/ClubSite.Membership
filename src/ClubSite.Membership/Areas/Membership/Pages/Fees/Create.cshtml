@@ -1,10 +1,10 @@
 @page
 @model ClubSite.Membership.Areas.Membership.Pages.Fees.CreateModel
 @{
-    ViewData["Title"] = "Create Membership Fee";
+    ViewData["Title"] = "Beitragsgruppe anlegen";
 }
 
-<h1>Create Membership Fee</h1>
+<h1>Beitragsgruppe anlegen</h1>
 
 <form method="post" class="row g-3">
     <div class="col-md-6">
@@ -28,12 +28,12 @@
     <div class="col-md-4 d-flex align-items-end">
         <div class="form-check">
             <input asp-for="Fee.IsDefault" class="form-check-input" />
-            <label asp-for="Fee.IsDefault" class="form-check-label">Default fee for this category</label>
+            <label asp-for="Fee.IsDefault" class="form-check-label">Standardbeitrag für diese Kategorie</label>
         </div>
     </div>
     <div class="col-12">
-        <button type="submit" class="btn btn-primary">Create</button>
-        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Anlegen</button>
+        <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
     </div>
 </form>
 

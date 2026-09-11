@@ -1,50 +1,50 @@
 @page
 @model ClubSite.Membership.Areas.Membership.Pages.Members.IndexModel
 @{
-    ViewData["Title"] = "Members";
+    ViewData["Title"] = "Mitglieder";
 }
 
 <partial name="_MembershipNavPartial" />
 
-<h1>Members</h1>
+<h1>Mitglieder</h1>
 
 <form method="get" class="row g-3 mb-3">
     <div class="col-md-3">
-        <input type="text" name="searchTerm" class="form-control" placeholder="Search by name or email..." value="@Model.SearchTerm" />
+        <input type="text" name="searchTerm" class="form-control" placeholder="Suchen..." value="@Model.SearchTerm" />
     </div>
     <div class="col-md-2">
         <select name="status" class="form-select" asp-items="Model.StatusOptions">
-            <option value="">All Statuses</option>
+            <option value="">Alle Status</option>
         </select>
     </div>
     <div class="col-md-2">
         <select name="departmentId" class="form-select" asp-items="Model.DepartmentOptions">
-            <option value="">All Departments</option>
+            <option value="">Alle Abteilungen</option>
         </select>
     </div>
     <div class="col-md-2">
         <select name="feeCategory" class="form-select" asp-items="Model.FeeCategoryOptions">
-            <option value="">All Fees</option>
+            <option value="">Alle Beiträge</option>
         </select>
     </div>
     <div class="col-md-3">
-        <button type="submit" class="btn btn-primary w-100">Search</button>
+        <button type="submit" class="btn btn-primary w-100">Suchen</button>
     </div>
 </form>
 
 <p>
-    <a asp-page="Create" class="btn btn-success">Add New Member</a>
+    <a asp-page="Create" class="btn btn-success">Neues Mitglied</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Name</th>
-            <th>Email</th>
-            <th>Fee Category</th>
+            <th>E-Mail</th>
+            <th>Beitragsgruppe</th>
             <th>Status</th>
             <th>Department</th>
-            <th>Joined</th>
+            <th>Beigetreten</th>
             <th></th>
         </tr>
     </thead>
@@ -60,8 +60,8 @@
                 <td>@member.JoinedAt.ToShortDateString()</td>
                 <td>
                     <a asp-page="Details" asp-route-id="@member.Id" class="btn btn-sm btn-info">Details</a>
-                    <a asp-page="Edit" asp-route-id="@member.Id" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-page="Delete" asp-route-id="@member.Id" class="btn btn-sm btn-danger">Delete</a>
+                    <a asp-page="Edit" asp-route-id="@member.Id" class="btn btn-sm btn-warning">Bearbeiten</a>
+                    <a asp-page="Delete" asp-route-id="@member.Id" class="btn btn-sm btn-danger">Löschen</a>
                 </td>
             </tr>
         }

@@ -1,20 +1,20 @@
 @page "{id:int}"
 @model ClubSite.Membership.Areas.Membership.Pages.Departments.DeleteModel
 @{
-    ViewData["Title"] = "Delete Department";
+    ViewData["Title"] = "Abteilung löschen";
 }
 
-<h1>Delete Department</h1>
+<h1>Abteilung löschen</h1>
 
 <div class="alert alert-danger">
-    <h4 class="alert-heading">Are you sure you want to delete this department?</h4>
+    <h4 class="alert-heading">Möchten Sie diese Abteilung wirklich löschen?</h4>
     @if (Model.MemberCount > 0)
     {
-        <p><strong>Warning:</strong> This department has <strong>@Model.MemberCount active member(s)</strong> assigned. You cannot delete it until all members are reassigned.</p>
+        <p><strong>Achtung:</strong> Diese Abteilung hat <strong>@Model.MemberCount aktive(s) Mitglied(er)</strong>. Sie kann erst gelöscht werden, wenn alle Mitglieder umgebucht wurden.</p>
     }
     else
     {
-        <p>This action cannot be undone.</p>
+        <p>Diese Aktion kann nicht rückgängig gemacht werden.</p>
     }
 </div>
 
@@ -25,15 +25,15 @@
     <dt class="col-sm-3">Description</dt>
     <dd class="col-sm-9">@(Model.Department.Description ?? "-")</dd>
 
-    <dt class="col-sm-3">Members</dt>
-    <dd class="col-sm-9">@Model.MemberCount active</dd>
+    <dt class="col-sm-3">Mitglieder</dt>
+    <dd class="col-sm-9">@Model.MemberCount aktiv</dd>
 </dl>
 
 <form method="post">
     <input type="hidden" asp-for="Department.Id" />
     @if (Model.MemberCount == 0)
     {
-        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <button type="submit" class="btn btn-danger">Löschen</button>
     }
-    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+    <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
 </form>

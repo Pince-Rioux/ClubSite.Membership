@@ -1,12 +1,12 @@
 @page
 @model ClubSite.Membership.Areas.Membership.Pages.Members.CreateModel
 @{
-    ViewData["Title"] = "Create Member";
+    ViewData["Title"] = "Mitglied anlegen";
 }
 
 <partial name="_MembershipNavPartial" />
 
-<h1>Create Member</h1>
+<h1>Mitglied anlegen</h1>
 
 <form method="post" class="row g-3">
     @* Main member fields *@
@@ -31,11 +31,11 @@
         <span asp-validation-for="Member.Phone" class="text-danger"></span>
     </div>
     <div class="col-md-6">
-        <label class="form-label">BirthDate</label>
+        <label class="form-label">Geburtsdatum</label>
         <div class="row g-1">
             <div class="col-4">
                 <select asp-for="BirthDay" class="form-select">
-                    <option value="">Day</option>
+                    <option value="">Tag</option>
                     @for (int d = 1; d <= 31; d++)
                     {
                         <option value="@d">@d</option>
@@ -44,7 +44,7 @@
             </div>
             <div class="col-4">
                 <select asp-for="BirthMonth" class="form-select">
-                    <option value="">Month</option>
+                    <option value="">Monat</option>
                     @for (int m = 1; m <= 12; m++)
                     {
                         <option value="@m">@m</option>
@@ -53,7 +53,7 @@
             </div>
             <div class="col-4">
                 <select asp-for="BirthYear" class="form-select">
-                    <option value="">Year</option>
+                    <option value="">Jahr</option>
                     @for (int y = DateTime.Today.Year; y >= 1900; y--)
                     {
                         <option value="@y">@y</option>
@@ -64,24 +64,24 @@
         <span asp-validation-for="Member.BirthDate" class="text-danger"></span>
     </div>
     <div class="col-md-4">
-        <label asp-for="Member.MembershipFeeId" class="form-label">Fee / Category</label>
+        <label asp-for="Member.MembershipFeeId" class="form-label"></label>
         <select asp-for="Member.MembershipFeeId" asp-items="Model.FeeOptions" class="form-select">
-            <option value="">Select fee...</option>
+            <option value="">Bitte wählen...</option>
         </select>
         <span asp-validation-for="Member.MembershipFeeId" class="text-danger"></span>
     </div>
     <div class="col-md-4">
         <label asp-for="Member.DepartmentId" class="form-label"></label>
         <select asp-for="Member.DepartmentId" asp-items="Model.DepartmentOptions" class="form-select">
-            <option value="">No department</option>
+            <option value="">Keine Abteilung</option>
         </select>
     </div>
 
     @* Guardian (only for Youth) *@
     <div class="col-md-6" id="guardianSection" style="display:none">
-        <label asp-for="Member.GuardianMemberId" class="form-label">Guardian</label>
+        <label asp-for="Member.GuardianMemberId" class="form-label"></label>
         <select asp-for="Member.GuardianMemberId" asp-items="Model.GuardianOptions" class="form-select">
-            <option value="">Select guardian...</option>
+            <option value="">Erziehungsberechtigten wählen...</option>
         </select>
         <span asp-validation-for="Member.GuardianMemberId" class="text-danger"></span>
     </div>
@@ -89,8 +89,8 @@
     @* Family members section (only for Family) *@
     <div class="col-12" id="familySection" style="display:none">
         <hr />
-        <h5>Family Members</h5>
-        <p class="text-muted">Add additional family members. The main member above is automatically part of this family.</p>
+        <h5>Familienmitglieder</h5>
+        <p class="text-muted">Fügen Sie weitere Familienmitglieder hinzu. Das Hauptmitglied ist automatisch Teil dieser Familie.</p>
 
         <div id="familyMembersContainer">
             @* Template row — hidden, used for cloning *@
@@ -142,13 +142,13 @@
                     <span class="text-danger small" style="display:none" data-validation-for="FamilyMembers[INDEX]"></span>
                 </div>
                 <div class="col-md-1">
-                    <button type="button" class="btn btn-sm btn-outline-danger remove-family-row" title="Remove">&times;</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-family-row" title="Entfernen">&times;</button>
                 </div>
             </div>
         </div>
 
         <button type="button" class="btn btn-sm btn-outline-primary" id="addFamilyMemberBtn">
-            + Add family member
+            + Familienmitglied hinzufügen
         </button>
         <div id="familyMemberErrors" class="text-danger mt-1"></div>
         <hr />
@@ -184,8 +184,8 @@
         <input asp-for="Member.BankBic" class="form-control" />
     </div>
     <div class="col-12">
-        <button type="submit" class="btn btn-primary">Create</button>
-        <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Anlegen</button>
+        <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
     </div>
 </form>
 
