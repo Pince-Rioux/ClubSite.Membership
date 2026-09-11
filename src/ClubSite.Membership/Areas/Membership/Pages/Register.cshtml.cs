@@ -46,6 +46,9 @@ public class RegisterModel(
     [BindProperty]
     public string? GuardianEmail { get; set; }
 
+    [BindProperty]
+    public string? GuardianPhone { get; set; }
+
     /// <summary>
     /// Additional family members (used when FeeCategory = Family).
     /// </summary>

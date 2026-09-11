@@ -80,17 +80,21 @@
         <h5 class="border-bottom pb-2">Erziehungsberechtigter</h5>
         <p class="text-muted">Da Sie unter 18 Jahren sind, benötigen wir die Daten eines Erziehungsberechtigten.</p>
         <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label asp-for="GuardianFirstName" class="form-label">Vorname</label>
                 <input asp-for="GuardianFirstName" class="form-control" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label asp-for="GuardianLastName" class="form-label">Nachname</label>
                 <input asp-for="GuardianLastName" class="form-control" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label asp-for="GuardianEmail" class="form-label">E-Mail</label>
                 <input asp-for="GuardianEmail" class="form-control" type="email" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="GuardianPhone" class="form-label">Telefon</label>
+                <input asp-for="GuardianPhone" class="form-control" type="tel" />
             </div>
         </div>
     </div>
