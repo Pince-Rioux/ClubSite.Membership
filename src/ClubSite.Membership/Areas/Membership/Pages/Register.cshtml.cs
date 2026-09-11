@@ -21,6 +21,19 @@ public class RegisterModel(
     public Member Member { get; set; } = new();
 
     /// <summary>
+    /// Cross-browser date input: day/month/year selects.
+    /// Combined into Member.BirthDate before validation.
+    /// </summary>
+    [BindProperty]
+    public int? BirthDay { get; set; }
+
+    [BindProperty]
+    public int? BirthMonth { get; set; }
+
+    [BindProperty]
+    public int? BirthYear { get; set; }
+
+    /// <summary>
     /// Guardian data for Youth members (not persisted as Member — saved as admin note for now).
     /// In a full implementation, this would create a guardian Member record or link to existing.
     /// </summary>
@@ -64,6 +77,9 @@ public class RegisterModel(
         {
             return await HandleFamilyRegistrationAsync();
         }
+
+        // Compose BirthDate from cross-browser selects
+        if (!TryComposeBirthDate()) return Page();
 
         // Validate member
         var validationResult = await validator.ValidateAsync(Member);
@@ -184,6 +200,26 @@ public class RegisterModel(
             await LoadOptionsAsync();
             return Page();
         }
+    }
+
+    private bool TryComposeBirthDate()
+    {
+        if (BirthYear.HasValue && BirthMonth.HasValue && BirthDay.HasValue)
+        {
+            try
+            {
+                Member.BirthDate = new DateTime(BirthYear.Value, BirthMonth.Value, BirthDay.Value);
+                return true;
+            }
+                catch (ArgumentOutOfRangeException)
+            {
+                ModelState.AddModelError("Member.BirthDate", "Bitte geben Sie ein gültiges Datum ein.");
+                return false;
+            }
+        }
+
+        ModelState.AddModelError("Member.BirthDate", "Bitte wählen Sie Ihr Geburtsdatum aus (Tag, Monat, Jahr).");
+        return false;
     }
 
     private async Task LoadOptionsAsync()

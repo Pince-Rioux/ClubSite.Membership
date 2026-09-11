@@ -23,6 +23,15 @@ public class CreateModel(
     [BindProperty]
     public Member Member { get; set; } = new();
 
+    [BindProperty]
+    public int? BirthDay { get; set; }
+
+    [BindProperty]
+    public int? BirthMonth { get; set; }
+
+    [BindProperty]
+    public int? BirthYear { get; set; }
+
     /// <summary>
     /// Additional family members (only used when FeeCategory = Family).
     /// </summary>
@@ -47,6 +56,9 @@ public class CreateModel(
         var selectedFee = await context.MembershipFees
             .AsNoTracking()
             .FirstOrDefaultAsync(f => f.Id == Member.MembershipFeeId);
+
+        // Compose BirthDate from cross-browser selects
+        if (!TryComposeBirthDate()) return await ReloadPageAsync();
 
         if (selectedFee?.Category == FeeCategory.Family)
         {
@@ -200,6 +212,32 @@ public class CreateModel(
             .Where(m => m.MembershipFee!.Category == FeeCategory.Adult && m.Status == MemberStatus.Active)
             .Select(m => new SelectListItem { Value = m.Id.ToString(), Text = m.LastName + ", " + m.FirstName })
             .ToListAsync();
+    }
+
+    private bool TryComposeBirthDate()
+    {
+        if (BirthYear.HasValue && BirthMonth.HasValue && BirthDay.HasValue)
+        {
+            try
+            {
+                Member.BirthDate = new DateTime(BirthYear.Value, BirthMonth.Value, BirthDay.Value);
+                return true;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                ModelState.AddModelError("Member.BirthDate", "Bitte geben Sie ein gültiges Datum ein.");
+                return false;
+            }
+        }
+
+        ModelState.AddModelError("Member.BirthDate", "Bitte wählen Sie ein Geburtsdatum aus (Tag, Monat, Jahr).");
+        return false;
+    }
+
+    private async Task<IActionResult> ReloadPageAsync()
+    {
+        await LoadOptionsAsync();
+        return Page();
     }
 
     public class FamilyMemberItem
