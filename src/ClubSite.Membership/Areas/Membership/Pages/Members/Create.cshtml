@@ -32,7 +32,8 @@
     </div>
     <div class="col-md-4">
         <label asp-for="Member.BirthDate" class="form-label"></label>
-        <input asp-for="Member.BirthDate" class="form-control" type="date" />
+        <input asp-for="Member.BirthDate" class="form-control" type="date"
+               value="@(Model.Member.BirthDate.Year > 1 ? Model.Member.BirthDate.ToString("yyyy-MM-dd") : "")" />
         <span asp-validation-for="Member.BirthDate" class="text-danger"></span>
     </div>
     <div class="col-md-4">
