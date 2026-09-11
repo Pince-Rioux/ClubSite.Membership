@@ -21,6 +21,15 @@ public class EditModel(
     [BindProperty]
     public Member Member { get; set; } = new();
 
+    [BindProperty]
+    public int? BirthDay { get; set; }
+
+    [BindProperty]
+    public int? BirthMonth { get; set; }
+
+    [BindProperty]
+    public int? BirthYear { get; set; }
+
     public List<SelectListItem> FeeOptions { get; set; } = [];
     public List<SelectListItem> DepartmentOptions { get; set; } = [];
     public List<SelectListItem> GuardianOptions { get; set; } = [];
@@ -35,12 +44,25 @@ public class EditModel(
         }
 
         Member = member;
+        if (member.BirthDate.Year > 1)
+        {
+            BirthDay = member.BirthDate.Day;
+            BirthMonth = member.BirthDate.Month;
+            BirthYear = member.BirthDate.Year;
+        }
         await LoadOptionsAsync();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
+        // Compose BirthDate from cross-browser selects
+        if (BirthYear.HasValue && BirthMonth.HasValue && BirthDay.HasValue)
+        {
+            try { Member.BirthDate = new DateTime(BirthYear.Value, BirthMonth.Value, BirthDay.Value); }
+            catch (ArgumentOutOfRangeException) { ModelState.AddModelError("Member.BirthDate", "Invalid date."); }
+        }
+
         var validationResult = await validator.ValidateAsync(Member);
         if (!validationResult.IsValid)
         {

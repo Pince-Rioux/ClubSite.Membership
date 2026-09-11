@@ -108,11 +108,30 @@
                 <div class="col-md-3">
                     <input name="FamilyMembers[INDEX].LastName" class="form-control form-control-sm" placeholder="Nachname" />
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input name="FamilyMembers[INDEX].Email" class="form-control form-control-sm" type="email" placeholder="E-Mail" />
                 </div>
-                <div class="col-md-2">
-                    <input name="FamilyMembers[INDEX].BirthDate" class="form-control form-control-sm" type="date" />
+                <div class="col-md-3">
+                    <div class="row g-1">
+                        <div class="col-4">
+                            <select name="FamilyMembers[INDEX].BirthDay" class="form-select form-select-sm">
+                                <option value="">Tag</option>
+                                @for (int d = 1; d <= 31; d++) { <option value="@d">@d</option> }
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <select name="FamilyMembers[INDEX].BirthMonth" class="form-select form-select-sm">
+                                <option value="">Monat</option>
+                                @for (int m = 1; m <= 12; m++) { <option value="@m">@m</option> }
+                            </select>
+                        </div>
+                        <div class="col-4">
+                            <select name="FamilyMembers[INDEX].BirthYear" class="form-select form-select-sm">
+                                <option value="">Jahr</option>
+                                @for (int y = DateTime.Today.Year; y >= 1900; y--) { <option value="@y">@y</option> }
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-1">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-family-row" title="Entfernen">&times;</button>

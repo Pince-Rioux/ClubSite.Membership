@@ -48,9 +48,11 @@
         <span asp-validation-for="Member.Phone" class="text-danger"></span>
     </div>
     <div class="col-md-4">
-        <label asp-for="Member.BirthDate" class="form-label"></label>
-        <input asp-for="Member.BirthDate" class="form-control" type="date" readonly disabled
-               value="@(Model.Member.BirthDate.Year > 1 ? Model.Member.BirthDate.ToString("yyyy-MM-dd") : "")" />
+        <label class="form-label">Geburtsdatum</label>
+        <div class="form-control bg-light" style="cursor:not-allowed">
+            @(Model.Member.BirthDate.Year > 1 ? Model.Member.BirthDate.ToString("dd.MM.yyyy") : "-")
+        </div>
+        <input type="hidden" asp-for="Member.BirthDate" />
         <small class="text-muted">Das Geburtsdatum kann nicht geändert werden.</small>
     </div>
     <div class="col-md-4">

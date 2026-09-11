@@ -32,10 +32,37 @@
         <input asp-for="Member.Phone" class="form-control" />
         <span asp-validation-for="Member.Phone" class="text-danger"></span>
     </div>
-    <div class="col-md-4">
-        <label asp-for="Member.BirthDate" class="form-label"></label>
-        <input asp-for="Member.BirthDate" class="form-control" type="date"
-               value="@(Model.Member.BirthDate.Year > 1 ? Model.Member.BirthDate.ToString("yyyy-MM-dd") : "")" />
+    <div class="col-md-6">
+        <label class="form-label">BirthDate</label>
+        <div class="row g-1">
+            <div class="col-4">
+                <select asp-for="BirthDay" class="form-select">
+                    <option value="">Day</option>
+                    @for (int d = 1; d <= 31; d++)
+                    {
+                        <option value="@d">@d</option>
+                    }
+                </select>
+            </div>
+            <div class="col-4">
+                <select asp-for="BirthMonth" class="form-select">
+                    <option value="">Month</option>
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        <option value="@m">@m</option>
+                    }
+                </select>
+            </div>
+            <div class="col-4">
+                <select asp-for="BirthYear" class="form-select">
+                    <option value="">Year</option>
+                    @for (int y = DateTime.Today.Year; y >= 1900; y--)
+                    {
+                        <option value="@y">@y</option>
+                    }
+                </select>
+            </div>
+        </div>
         <span asp-validation-for="Member.BirthDate" class="text-danger"></span>
     </div>
     <div class="col-md-4">

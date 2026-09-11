@@ -239,7 +239,19 @@ public class RegisterModel(
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public DateTime BirthDate { get; set; }
+        public int? BirthDay { get; set; }
+        public int? BirthMonth { get; set; }
+        public int? BirthYear { get; set; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public DateTime BirthDate
+        {
+            get
+            {
+                if (BirthDay.HasValue && BirthMonth.HasValue && BirthYear.HasValue)
+                    return new DateTime(BirthYear.Value, BirthMonth.Value, BirthDay.Value);
+                return DateTime.MinValue;
+            }
+        }
         public string Relationship { get; set; } = string.Empty;
         public DateTime JoinedAt { get; set; } = DateTime.Today;
     }

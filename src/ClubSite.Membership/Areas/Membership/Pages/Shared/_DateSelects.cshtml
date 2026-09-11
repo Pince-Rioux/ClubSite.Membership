@@ -1,0 +1,47 @@
+@* 
+    Cross-browser date select: Tag, Monat, Jahr dropdowns.
+    Works in Safari, Chrome, Firefox — no browser datepicker dependency.
+    
+    Model: Dictionary with keys: Prefix (string), Day (int?), Month (int?), Year (int?)
+    Example usage:
+        @await Html.PartialAsync("_DateSelects", new Dictionary<string, object> {
+            { "Prefix", "FamilyMembers[0].Birth" },
+            { "Day", null },
+            { "Month", null },
+            { "Year", null }
+        })
+*@@{
+    var prefix = ViewBag.DatePrefix ?? "";
+    var dayVal = ViewBag.DayVal;
+    var monthVal = ViewBag.MonthVal;
+    var yearVal = ViewBag.YearVal;
+}
+<div class="row g-1">
+    <div class="col-4">
+        <select name="@(prefix)Day" class="form-select form-select-sm">
+            <option value="">Tag</option>
+            @for (int d = 1; d <= 31; d++)
+            {
+                <option value="@d" selected="@(dayVal != null && (int)dayVal == d ? true : null)">@d</option>
+            }
+        </select>
+    </div>
+    <div class="col-4">
+        <select name="@(prefix)Month" class="form-select form-select-sm">
+            <option value="">Monat</option>
+            @for (int m = 1; m <= 12; m++)
+            {
+                <option value="@m" selected="@(monthVal != null && (int)monthVal == m ? true : null)">@m</option>
+            }
+        </select>
+    </div>
+    <div class="col-4">
+        <select name="@(prefix)Year" class="form-select form-select-sm">
+            <option value="">Jahr</option>
+            @for (int y = DateTime.Today.Year; y >= 1900; y--)
+            {
+                <option value="@y" selected="@(yearVal != null && (int)yearVal == y ? true : null)">@y</option>
+            }
+        </select>
+    </div>
+</div>
