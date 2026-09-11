@@ -9,15 +9,15 @@
 |---|---|---|---|
 | KR 1.1 | Core entities defined (Member, Department, MembershipFee, FamilyGroup) | 4 entities with full relationships including guardian and family linking | ✅ Done |
 | KR 1.2 | MembershipDbContext with own DB schema | EF Core migrations runnable, isolated from Piranha schema | ✅ Done |
-| KR 1.3 | Admin CRUD pages for Member, Department, Fee, FamilyGroup | All CRUD operations work via Razor Pages in Membership Area. **Family members are added inline when FeeCategory = Family** (no separate FamilyGroup CRUD required for standard workflows) | 🟡 Member + Department + Fee pages done. Family inline UI needs rework |
+| KR 1.3 | Admin CRUD pages for Member, Department, Fee, FamilyGroup | All CRUD operations work via Razor Pages in Membership Area. **Family members are added inline when FeeCategory = Family** (no separate FamilyGroup CRUD required for standard workflows) | ✅ Member + Department + Fee pages done. Family inline UI with Relationship dropdown + JoinedAt field + validation error display |
 | KR 1.4 | Youth-guardian validation enforced | Creating a Youth member without guardian = validation error | ✅ Done |
 | KR 1.5 | Family group linking functional | Members can be grouped into families, minimum 2 per group | ✅ Done (service validation + min-2 check) |
 | KR 1.6 | Razor Class Library integrated into ClubSite solution | `dotnet build` passes (tests planned for Phase 2) | ✅ Build passes. Test project pending. |
 | KR 1.7 | Documentation complete (OKR, use cases, architecture, security) | 4 docs created, reviewed, in repo | ✅ Done |
-| KR 1.8 | **Admin Invite-Flow** | Admin can create member(s) and send Magic-Link via email so the new member sets their own password. No admin password handling needed. | ❌ Not started |
-| KR 1.9 | **Family inline anlage beim Create** | When FeeCategory = Family, the Create form shows inline sub-member rows (name, email, birthdate, relationship). FamilyGroup is created automatically on submit. | ❌ Not started |
-| KR 1.10 | **Login/Logout UI** | Login page, logout, password-reset via Piranha Identity (shared auth). Available to all member types. | ❌ Not started |
-| KR 1.11 | **Profile editing** | Member can update their own personal info, address, contact data (except identity-critical and admin-controlled fields). Available after login. | ❌ Not started |
+| KR 1.8 | **Admin Invite-Flow** | Admin can create member(s) and send Magic-Link via email so the new member sets their own password. No admin password handling needed. | ✅ Done. Invitation created + email sent (plain-text German template) via ClubSite's MailKit/SMTP infrastructure on admin Create. |
+| KR 1.9 | **Family inline anlage beim Create** | When FeeCategory = Family, the Create form shows inline sub-member rows (name, email, birthdate, relationship, join date). FamilyGroup is created automatically on submit. Invitations sent to all sub-members. | ✅ Done. FamilyMemberItem now includes Relationship + JoinedAt. Validation errors shown inline. Invitations sent for all family members. |
+| KR 1.10 | **Login/Logout UI** | Login page, logout, password-reset via RCL's own Identity (`SignInManager<MembershipUser>`). Available to all member types. | ✅ Done. Role-aware redirect: admin → Members, member → Profile. |
+| KR 1.11 | **Profile editing** | Member can update their own personal info, address, contact data (except identity-critical and admin-controlled fields). Available after login. | ✅ Done. Profile page with OnPostAsync update via memberService.UpdateOwnProfileAsync. |
 
 ## Objective 2: Member data protected to the highest security and DSGVO standards
 

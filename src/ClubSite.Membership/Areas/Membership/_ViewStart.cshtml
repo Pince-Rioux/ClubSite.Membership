@@ -1,3 +1,6 @@
 @{
-    Layout = "/Views/Shared/_Layout.cshtml";
+    // Use the host's ClubSite layout for consistent chrome.
+    // Note: partials in the host layout (like _MenuTopLevel) need app-relative paths
+    // because view discovery from the Membership area doesn't find them otherwise.
+    Layout = "/Pages/_Layout.cshtml";
 }

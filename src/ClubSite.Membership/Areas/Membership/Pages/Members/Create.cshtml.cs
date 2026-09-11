@@ -15,6 +15,8 @@ namespace ClubSite.Membership.Areas.Membership.Pages.Members;
 [ValidateAntiForgeryToken]
 public class CreateModel(
     IMemberService memberService,
+    IInvitationService invitationService,
+    IMemberAccountService accountService,
     IValidator<Member> validator,
     MembershipDbContext context) : PageModel
 {
@@ -66,7 +68,16 @@ public class CreateModel(
 
         var created = await memberService.CreateAsync(Member, createdBy);
 
-        TempData["Success"] = $"Member '{created.FirstName} {created.LastName}' created successfully.";
+        // Create invitation + send Magic-Link email
+        var invitation = await invitationService.CreateInvitationAsync(created.Id, created.Email);
+        var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
+                        ?? $"/Membership/Activate?token={invitation.Token}";
+        await accountService.SendInvitationEmailAsync(
+            created.Email,
+            $"{created.FirstName} {created.LastName}",
+            inviteUrl);
+
+        TempData["Success"] = $"Member '{created.FirstName} {created.LastName}' created. Invitation email sent to {created.Email}.";
         return RedirectToPage("Index");
     }
 
@@ -146,7 +157,20 @@ public class CreateModel(
         try
         {
             var createdMembers = await memberService.CreateFamilyAsync(Member, subMembers, createdBy);
-            TempData["Success"] = $"{createdMembers.Count} family members created successfully.";
+
+            // Create invitations + send Magic-Link emails for all family members
+            foreach (var cm in createdMembers)
+            {
+                var invitation = await invitationService.CreateInvitationAsync(cm.Id, cm.Email);
+                var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
+                                ?? $"/Membership/Activate?token={invitation.Token}";
+                await accountService.SendInvitationEmailAsync(
+                    cm.Email,
+                    $"{cm.FirstName} {cm.LastName}",
+                    inviteUrl);
+            }
+
+            TempData["Success"] = $"{createdMembers.Count} family members created. Invitation emails sent.";
             return RedirectToPage("Index");
         }
         catch (Exception ex)
@@ -184,6 +208,7 @@ public class CreateModel(
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public DateTime BirthDate { get; set; }
-        public string Relationship { get; set; } = "";
+        public string Relationship { get; set; } = string.Empty;
+        public DateTime JoinedAt { get; set; } = DateTime.Today;
     }
 }

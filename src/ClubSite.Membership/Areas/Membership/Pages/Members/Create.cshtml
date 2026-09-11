@@ -65,17 +65,32 @@
         <div id="familyMembersContainer">
             @* Template row — hidden, used for cloning *@
             <div id="familyMemberTemplate" class="family-member-row row g-2 mb-2 p-2 border rounded" style="display:none">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input name="FamilyMembers[INDEX].FirstName" class="form-control form-control-sm" placeholder="Vorname" />
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input name="FamilyMembers[INDEX].LastName" class="form-control form-control-sm" placeholder="Nachname" />
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <input name="FamilyMembers[INDEX].Email" class="form-control form-control-sm" type="email" placeholder="E-Mail" />
                 </div>
                 <div class="col-md-2">
                     <input name="FamilyMembers[INDEX].BirthDate" class="form-control form-control-sm" type="date" />
+                </div>
+                <div class="col-md-1">
+                    <select name="FamilyMembers[INDEX].Relationship" class="form-select form-select-sm">
+                        <option value="">Verhältnis</option>
+                        <option value="Ehepartner">Ehepartner</option>
+                        <option value="Kind">Kind</option>
+                        <option value="Geschwister">Geschwister</option>
+                        <option value="Elternteil">Elternteil</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <input name="FamilyMembers[INDEX].JoinedAt" class="form-control form-control-sm" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-1">
+                    <span class="text-danger small" style="display:none" data-validation-for="FamilyMembers[INDEX]"></span>
                 </div>
                 <div class="col-md-1">
                     <button type="button" class="btn btn-sm btn-outline-danger remove-family-row" title="Remove">&times;</button>
@@ -173,11 +188,11 @@
                 const index = familyMemberIndex++;
 
                 // Fix field names
-                clone.querySelectorAll('input').forEach(input => {
-                    const name = input.getAttribute('name');
+                clone.querySelectorAll('input, select').forEach(field => {
+                    const name = field.getAttribute('name');
                     if (name) {
-                        input.setAttribute('name', name.replace('INDEX', index));
-                        input.setAttribute('id', 'FamilyMembers_' + index + '_' + input.name.split('.').pop());
+                        field.setAttribute('name', name.replace('INDEX', index));
+                        field.setAttribute('id', 'FamilyMembers_' + index + '_' + name.split('.').pop());
                     }
                 });
 
@@ -186,6 +201,21 @@
                 if (data.lastName) clone.querySelector('[placeholder="Nachname"]').value = data.lastName;
                 if (data.email) clone.querySelector('[placeholder="E-Mail"]').value = data.email;
                 if (data.birthDate) clone.querySelector('[type="date"]').value = data.birthDate;
+                if (data.joinedAt) clone.querySelectorAll('[type="date"]')[1].value = data.joinedAt;
+                if (data.relationship) {
+                    const relSelect = clone.querySelector('select');
+                    relSelect.value = data.relationship;
+                }
+
+                // Show validation errors on re-render
+                const errorSpan = clone.querySelector('[data-validation-for]');
+                if (data.errors && data.errors.length > 0) {
+                    errorSpan.style.display = 'inline';
+                    errorSpan.textContent = data.errors.join(', ');
+                } else if (data.hasErrors) {
+                    errorSpan.style.display = 'inline';
+                    errorSpan.textContent = 'Bitte prüfen Sie die Eingaben';
+                }
 
                 // Remove button
                 clone.querySelector('.remove-family-row').addEventListener('click', function () {
@@ -196,14 +226,38 @@
             }
 
             // Pre-populate existing family members (from server-side validation failures)
-            @foreach (var fm in Model.FamilyMembers)
+            @{
+                var validationErrors = ViewData.ModelState
+                    .Where(kvp => kvp.Key.StartsWith("FamilyMembers[") && kvp.Value?.Errors.Count > 0)
+                    .ToList();
+                var memberIndicesWithErrors = validationErrors
+                    .Select(kvp => {
+                        var match = System.Text.RegularExpressions.Regex.Match(kvp.Key, @"FamilyMembers\[(\d+)\]");
+                        return match.Success ? int.Parse(match.Groups[1].Value) : -1;
+                    })
+                    .Where(i => i >= 0)
+                    .Distinct()
+                    .ToHashSet();
+            }
+            @for (int i = 0; i < Model.FamilyMembers.Count; i++)
             {
+                var fm = Model.FamilyMembers[i];
+                var hasErrors = memberIndicesWithErrors.Contains(i);
+                var errors = validationErrors
+                    .Where(kvp => kvp.Key.StartsWith($"FamilyMembers[{i}]"))
+                    .SelectMany(kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage))
+                    .ToList();
                 <text>
                 addFamilyMemberRow({
-                    firstName: '@fm.FirstName',
-                    lastName: '@fm.LastName',
-                    email: '@fm.Email',
-                    birthDate: '@fm.BirthDate.ToString("yyyy-MM-dd")'
+                    firstName: '@fm.FirstName.Replace("'", "\\'")',
+                    lastName: '@fm.LastName.Replace("'", "\\'")',
+                    email: '@fm.Email.Replace("'", "\\'")',
+                    birthDate: '@fm.BirthDate.ToString("yyyy-MM-dd")',
+                    joinedAt: '@fm.JoinedAt.ToString("yyyy-MM-dd")',
+                    relationship: '@fm.Relationship',
+                    hasErrors: @(hasErrors ? "true" : "false"),
+                    @* Pass errors as a string since we can't serialize List<string> into JS easily *@
+                    errors: @(System.Text.Json.JsonSerializer.Serialize(errors))
                 });
                 </text>
             }

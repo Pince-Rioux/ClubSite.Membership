@@ -1,12 +1,14 @@
 using ClubSite.Membership.Data;
+using ClubSite.Membership.Models;
 using ClubSite.Membership.Services;
+using Microsoft.AspNetCore.Identity;
 using ClubSite.Membership.Services.Validators;
 using ClubSite.Membership.Services.Encryption;
 using ClubSite.Membership.Data.EntityConfigurations;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using ClubSite.Membership.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Security.Cryptography;
 
@@ -23,12 +25,35 @@ public static class ServiceCollectionExtensions
                       ?? configuration.GetConnectionString("VolleyballClub")
                       ?? throw new InvalidOperationException("No valid connection string found. Configure 'ClubMembershipDb' or 'VolleyballClub'.");
 
+        // Register the Membership DbContext (now includes Identity tables in Membership schema)
         services.AddDbContext<MembershipDbContext>(options =>
             options.UseSqlServer(connStr));
 
+        // Register Identity for the Membership module (independent from Piranha Identity)
+        services.AddIdentityCore<MembershipUser>(options =>
+            {
+                // Password requirements for member accounts
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+
+                // Lockout settings
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<MembershipDbContext>()
+            .AddSignInManager()
+            .AddDefaultTokenProviders();
+
+        // Register Identity services
         services.AddScoped<IMemberService, MemberService>();
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<IInvitationService, InvitationService>();
+        services.AddScoped<IMemberAccountService, DefaultMemberAccountService>();
+        services.TryAddScoped<IEmailSender, LogOnlyEmailSender>();
         services.AddScoped<IValidator<Member>, MemberValidator>();
 
         // Add AES-256-GCM encryption for sensitive personal data

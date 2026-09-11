@@ -1,21 +1,22 @@
+using ClubSite.Membership.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Piranha.Manager.LocalAuth;
 
 namespace ClubSite.Membership.Areas.Membership.Pages;
 
 public class LogoutModel : PageModel
 {
-    private readonly ISecurity _security;
+    private readonly SignInManager<MembershipUser> _signInManager;
 
-    public LogoutModel(ISecurity security)
+    public LogoutModel(SignInManager<MembershipUser> signInManager)
     {
-        _security = security;
+        _signInManager = signInManager;
     }
 
     public async Task<IActionResult> OnGetAsync()
     {
-        await _security.SignOut(HttpContext);
+        await _signInManager.SignOutAsync();
         return Redirect("~/Membership/Login");
     }
 }

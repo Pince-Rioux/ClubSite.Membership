@@ -1,18 +1,24 @@
+using ClubSite.Membership.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Piranha.Manager.LocalAuth;
 
 namespace ClubSite.Membership.Areas.Membership.Pages;
 
 public class LoginModel : PageModel
 {
-    private readonly ISecurity _security;
+    private readonly SignInManager<MembershipUser> _signInManager;
+    private readonly UserManager<MembershipUser> _userManager;
     private readonly ILogger<LoginModel> _logger;
 
-    public LoginModel(ISecurity security, ILogger<LoginModel> logger)
+    public LoginModel(
+        SignInManager<MembershipUser> signInManager,
+        UserManager<MembershipUser> userManager,
+        ILogger<LoginModel> logger)
     {
-        _security = security;
+        _signInManager = signInManager;
+        _userManager = userManager;
         _logger = logger;
     }
 
@@ -35,13 +41,25 @@ public class LoginModel : PageModel
             return Page();
         }
 
-        await _security.SignOut(HttpContext);
+        // Sign out any existing session first
+        await _signInManager.SignOutAsync();
 
-        var result = await _security.SignIn(HttpContext, email, password);
-
-        if (result != LoginResult.Succeeded)
+        // Find the user by email
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
         {
-            _logger.LogWarning("Member login failed for {Email}", email);
+            _logger.LogWarning("Member login failed for {Email}: user not found", email);
+            ModelState.Clear();
+            ModelState.AddModelError(string.Empty, "E-Mail und/oder Passwort sind falsch.");
+            return Page();
+        }
+
+        var result = await _signInManager.PasswordSignInAsync(user, password, true, lockoutOnFailure: false);
+
+        if (!result.Succeeded)
+        {
+            _logger.LogWarning("Member login failed for {Email}: {Reason}",
+                email, result.IsLockedOut ? "locked out" : "wrong password");
             ModelState.Clear();
             ModelState.AddModelError(string.Empty, "E-Mail und/oder Passwort sind falsch.");
             return Page();
@@ -54,6 +72,15 @@ public class LoginModel : PageModel
             return LocalRedirect(returnUrl);
         }
 
-        return Redirect("~/Membership/Members");
+        // Role-aware default landing page:
+        // Admin → member management, everyone else → their own profile.
+        // Note: User.IsInRole() would reflect the previous request's principal,
+        // so we check the role via UserManager instead.
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            return Redirect("~/Membership/Members");
+        }
+
+        return Redirect("~/Membership/Profile");
     }
 }

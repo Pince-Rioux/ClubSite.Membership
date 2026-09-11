@@ -204,5 +204,7 @@ public class RegisterModel(
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public DateTime BirthDate { get; set; }
+        public string Relationship { get; set; } = string.Empty;
+        public DateTime JoinedAt { get; set; } = DateTime.Today;
     }
 }
