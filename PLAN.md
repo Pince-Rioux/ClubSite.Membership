@@ -5,7 +5,7 @@
 Two competing membership implementations exist:
 
 1. **ClubSite-embedded** (`ClubSite/Data/ClubContext`, etc.) — old, duplicated, wired to `ClubSite_Membership` DB
-2. **Membership RCL** (`projects/Membership/src/ClubSite.Membership/`) — richer, proper Razor Class Library, but uses Piranha ISecurity for login
+2. **Membership RCL** (`projects/Membership/src/VereinMember/`) — richer, proper Razor Class Library, but uses Piranha ISecurity for login
 
 Neither is truly independent. The RCL pages currently depend on Piranha's `ISecurity` for login.
 

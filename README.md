@@ -1,4 +1,4 @@
-# ClubSite Membership Module
+# VereinMember
 
 An add-on member management system for the ClubSite sports club website.
 
@@ -16,14 +16,14 @@ Membership/
 │   ├── ARCHITECTURE.md
 │   └── DSGVO_SECURITY.md
 ├── src/
-│   └── ClubSite.Membership/   # Razor Class Library
+│   └── VereinMember/   # Razor Class Library
 │       ├── Areas/Membership/  # Controllers, Pages, ViewModels
 │       ├── Data/              # DbContext, configurations, migrations
 │       ├── Models/            # Domain entities
 │       ├── Services/          # Business logic interfaces + implementations
 │       └── Extensions/        # DI registration helpers
 └── tests/
-    └── ClubSite.Membership.Tests/
+    └── VereinMember.Tests/
 ```
 
 ## Development Lifecycle

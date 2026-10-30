@@ -1,0 +1,142 @@
+@page "/Membership/Profile"
+@model VereinMember.Areas.Membership.Pages.ProfileModel
+@{
+    ViewData["Title"] = "Mein Profil";
+}
+
+<partial name="_MembershipNavPartial" />
+
+<h1>Mein Profil</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (Model.Member == null)
+{
+    <div class="alert alert-warning">Mitglied nicht gefunden.</div>
+    return;
+}
+
+<form method="post" class="row g-3">
+    <input type="hidden" asp-for="Member.Id" />
+    <input type="hidden" asp-for="Member.ConcurrencyToken" />
+
+    <div class="col-12">
+        <h5 class="border-bottom pb-2">Persönliche Daten</h5>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Member.FirstName" class="form-label"></label>
+        <input asp-for="Member.FirstName" class="form-control" />
+        <span asp-validation-for="Member.FirstName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.LastName" class="form-label"></label>
+        <input asp-for="Member.LastName" class="form-control" />
+        <span asp-validation-for="Member.LastName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Email" class="form-label"></label>
+        <input asp-for="Member.Email" class="form-control" readonly disabled />
+        <small class="text-muted">Die E-Mail-Adresse kann nicht geändert werden.</small>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Phone" class="form-label"></label>
+        <input asp-for="Member.Phone" class="form-control" />
+        <span asp-validation-for="Member.Phone" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Geburtsdatum</label>
+        <div class="form-control bg-light" style="cursor:not-allowed">
+            @(Model.Member.BirthDate.Year > 1 ? Model.Member.BirthDate.ToString("dd.MM.yyyy") : "-")
+        </div>
+        <input type="hidden" asp-for="Member.BirthDate" />
+        <small class="text-muted">Das Geburtsdatum kann nicht geändert werden.</small>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Beitragsgruppe</label>
+        <input class="form-control" value="@(Model.Member.MembershipFee?.Name ?? "-")" readonly disabled />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Status</label>
+        <input class="form-control" value="@Model.Member.Status" readonly disabled />
+    </div>
+
+    <div class="col-12 mt-3">
+        <h5 class="border-bottom pb-2">Adresse</h5>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="Member.Street" class="form-label"></label>
+        <input asp-for="Member.Street" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.ZipCode" class="form-label"></label>
+        <input asp-for="Member.ZipCode" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.City" class="form-label"></label>
+        <input asp-for="Member.City" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Country" class="form-label"></label>
+        <input asp-for="Member.Country" class="form-control" />
+    </div>
+
+    @if (Model.Member.FamilyGroup != null)
+    {
+        <div class="col-12 mt-3">
+            <h5 class="border-bottom pb-2">Familie</h5>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Familie</label>
+            <input class="form-control" value="@(Model.Member.FamilyGroup.Name ?? "Familie #" + Model.Member.FamilyGroup.Id)" readonly disabled />
+        </div>
+    }
+
+    @if (Model.Member.GuardianMember != null)
+    {
+        <div class="col-12 mt-3">
+            <h5 class="border-bottom pb-2">Erziehungsberechtigter</h5>
+        </div>
+        <div class="col-12">
+            <label class="form-label"></label>
+            <input class="form-control" value="@Model.Member.GuardianMember.LastName, @Model.Member.GuardianMember.FirstName" readonly disabled />
+        </div>
+    }
+
+    <div class="col-12 mt-3">
+        <h5 class="border-bottom pb-2">Sonstiges</h5>
+    </div>
+    <div class="col-12">
+        <label asp-for="Member.Notes" class="form-label">Notizen</label>
+        <textarea asp-for="Member.Notes" class="form-control" rows="3"></textarea>
+    </div>
+
+    @if (Model.Member.Department != null)
+    {
+        <div class="col-md-6">
+            <label class="form-label">Abteilung</label>
+            <input class="form-control" value="@Model.Member.Department.Name" readonly disabled />
+        </div>
+    }
+    <div class="col-md-6">
+        <label class="form-label">Eintrittsdatum</label>
+        <input class="form-control" value="@Model.Member.JoinedAt.ToShortDateString()" readonly disabled />
+    </div>
+
+    <div class="col-12 mt-4">
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a href="/Membership/Logout" class="btn btn-outline-secondary">Abmelden</a>
+    </div>
+</form>
+
+<div class="mt-3">
+    <a href="/" class="btn btn-outline-secondary btn-sm">Zurück zur Startseite</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

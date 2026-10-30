@@ -1,8 +1,8 @@
-# ClubSite Membership Module — Architecture
+# VereinMember — Architecture
 
 ## Overview
 
-The Membership module is implemented as a **Razor Class Library (RCL)** that is referenceable by the ClubSite ASP.NET Core host project. It lives in `projects/Membership/src/ClubSite.Membership/` during development and integrates into ClubSite via solution project reference.
+The Membership module is implemented as a **Razor Class Library (RCL)** that is referenceable by the ClubSite ASP.NET Core host project. It lives in `projects/Membership/src/VereinMember/` during development and integrates into ClubSite via solution project reference.
 
 ---
 
@@ -19,7 +19,7 @@ The Membership module is implemented as a **Razor Class Library (RCL)** that is 
 ## Module Structure
 
 ```
-ClubSite.Membership/
+VereinMember/
 ├── Areas/
 │   └── Membership/
 │       ├── Controllers/
@@ -77,7 +77,7 @@ ClubSite.Membership/
 │       └── MemberValidator.cs
 ├── Extensions/
 │   └── ServiceCollectionExtensions.cs     # DI registration helpers
-├── ClubSite.Membership.csproj
+├── VereinMember.csproj
 └── _Imports.cs
 ```
 
@@ -90,7 +90,7 @@ ClubSite.Membership/
 │                   ClubSite Host                  │
 │  (Program.cs, WebAppStartup.cs, appsettings)     │
 ├─────────────────────────────────────────────────┤
-│           ClubSite.Membership RCL                │
+│           VereinMember RCL                │
 │                                                  │
 │  ┌─────────────┐    ┌──────────────────────┐    │
 │  │ Razor Pages  │    │   API Controllers    │    │

@@ -1,0 +1,131 @@
+@page "{id:int}"
+@model VereinMember.Areas.Membership.Pages.Members.EditModel
+@{
+    ViewData["Title"] = "Mitglied bearbeiten";
+}
+
+<partial name="_MembershipNavPartial" />
+
+<h1>Mitglied bearbeiten</h1>
+
+<form method="post" class="row g-3">
+    <input type="hidden" asp-for="Member.Id" />
+    <input type="hidden" asp-for="Member.ConcurrencyToken" />
+
+    <div class="col-md-6">
+        <label asp-for="Member.FirstName" class="form-label"></label>
+        <input asp-for="Member.FirstName" class="form-control" />
+        <span asp-validation-for="Member.FirstName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.LastName" class="form-label"></label>
+        <input asp-for="Member.LastName" class="form-control" />
+        <span asp-validation-for="Member.LastName" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Email" class="form-label"></label>
+        <input asp-for="Member.Email" class="form-control" />
+        <span asp-validation-for="Member.Email" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Phone" class="form-label"></label>
+        <input asp-for="Member.Phone" class="form-control" />
+        <span asp-validation-for="Member.Phone" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Geburtsdatum</label>
+        <div class="row g-1">
+            <div class="col-4">
+                <select asp-for="BirthDay" class="form-select">
+                    <option value="">Tag</option>
+                    @for (int d = 1; d <= 31; d++)
+                    {
+                        <option value="@d">@d</option>
+                    }
+                </select>
+            </div>
+            <div class="col-4">
+                <select asp-for="BirthMonth" class="form-select">
+                    <option value="">Monat</option>
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        <option value="@m">@m</option>
+                    }
+                </select>
+            </div>
+            <div class="col-4">
+                <select asp-for="BirthYear" class="form-select">
+                    <option value="">Jahr</option>
+                    @for (int y = DateTime.Today.Year; y >= 1900; y--)
+                    {
+                        <option value="@y">@y</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <span asp-validation-for="Member.BirthDate" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.MembershipFeeId" class="form-label"></label>
+        <select asp-for="Member.MembershipFeeId" asp-items="Model.FeeOptions" class="form-select">
+            <option value="">Bitte wählen...</option>
+        </select>
+        <span asp-validation-for="Member.MembershipFeeId" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.DepartmentId" class="form-label"></label>
+        <select asp-for="Member.DepartmentId" asp-items="Model.DepartmentOptions" class="form-select">
+            <option value="">Keine Abteilung</option>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.GuardianMemberId" class="form-label"></label>
+        <select asp-for="Member.GuardianMemberId" asp-items="Model.GuardianOptions" class="form-select">
+            <option value="">Erziehungsberechtigten wählen...</option>
+        </select>
+        <span asp-validation-for="Member.GuardianMemberId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.FamilyGroupId" class="form-label">Familie</label>
+        <select asp-for="Member.FamilyGroupId" asp-items="Model.FamilyGroupOptions" class="form-select">
+            <option value="">Familie wählen...</option>
+        </select>
+        <span asp-validation-for="Member.FamilyGroupId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Street" class="form-label"></label>
+        <input asp-for="Member.Street" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.City" class="form-label"></label>
+        <input asp-for="Member.City" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Member.ZipCode" class="form-label"></label>
+        <input asp-for="Member.ZipCode" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.Country" class="form-label"></label>
+        <input asp-for="Member.Country" class="form-control" />
+    </div>
+    <div class="col-md-12">
+        <label asp-for="Member.Notes" class="form-label"></label>
+        <textarea asp-for="Member.Notes" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.BankIban" class="form-label"></label>
+        <input asp-for="Member.BankIban" class="form-control" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.BankBic" class="form-label"></label>
+        <input asp-for="Member.BankBic" class="form-control" />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

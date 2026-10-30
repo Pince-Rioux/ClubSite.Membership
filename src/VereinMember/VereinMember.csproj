@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <!-- Package metadata for NuGet publishing -->
+    <PackageId>VereinMember</PackageId>
+    <Title>VereinMember</Title>
+    <Version>1.0.0-dev</Version>
+    <Authors>axuno gGmbH and Contributors</Authors>
+    <Description>Membership management module for ClubSite (Piranha CMS). Handles registration, profile, family groups, departments, fees, and member administration.</Description>
+    <PackageProjectUrl>https://github.com/Pince-Rioux/VereinMember</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>clubsite;membership;piranha;verein;club-management</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+  </ItemGroup>
+
+</Project>

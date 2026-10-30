@@ -1,4 +1,4 @@
-# ClubSite Membership Module — Use Cases
+# VereinMember — Use Cases
 
 ## Actors
 

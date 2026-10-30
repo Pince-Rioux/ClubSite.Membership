@@ -1,4 +1,4 @@
-# ClubSite Membership Module — OKRs
+# VereinMember — OKRs
 
 ## Objective 1: Launch a production-ready member management system Phase1
 

@@ -1,0 +1,29 @@
+@page "{id:int}"
+@model VereinMember.Areas.Membership.Pages.Departments.EditModel
+@{
+    ViewData["Title"] = "Abteilung bearbeiten";
+}
+
+<h1>Abteilung bearbeiten</h1>
+
+<form method="post" class="row g-3">
+    <input type="hidden" asp-for="Department.Id" />
+
+    <div class="col-md-6">
+        <label asp-for="Department.Name" class="form-label"></label>
+        <input asp-for="Department.Name" class="form-control" />
+        <span asp-validation-for="Department.Name" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Department.Description" class="form-label"></label>
+        <input asp-for="Department.Description" class="form-control" />
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a asp-page="Index" class="btn btn-secondary">Abbrechen</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

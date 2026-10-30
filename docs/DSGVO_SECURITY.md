@@ -1,4 +1,4 @@
-# ClubSite Membership Module — DSGVO & Security Concept
+# VereinMember — DSGVO & Security Concept
 
 ## Compliance Framework
 
