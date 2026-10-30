@@ -1,10 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- Package metadata for NuGet publishing -->
+    <PackageId>ClubSite.Membership</PackageId>
+    <Title>ClubSite Membership RCL</Title>
+    <Version>1.0.0-dev</Version>
+    <Authors>axuno gGmbH and Contributors</Authors>
+    <Description>Membership management module for ClubSite (Piranha CMS). Handles registration, profile, family groups, departments, fees, and member administration.</Description>
+    <PackageProjectUrl>https://github.com/Pince-Rioux/ClubSite.Membership</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>clubsite;membership;piranha;verein;club-management</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
