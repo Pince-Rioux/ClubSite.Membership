@@ -112,6 +112,10 @@ public class RegisterModel(
             // Create the member
             Member.Status = MemberStatus.Active;
             Member.JoinedAt = DateTime.UtcNow;
+            if (PrivacyConsented)
+            {
+                Member.PrivacyConsentedAt = DateTime.UtcNow;
+            }
 
             var created = await memberService.CreateAsync(Member, Member.Email);
 
@@ -123,12 +127,7 @@ public class RegisterModel(
                 $"{created.FirstName} {created.LastName}",
                 inviteUrl);
 
-            // Record privacy consent
-            if (PrivacyConsented)
-            {
-                created.PrivacyConsentedAt = DateTime.UtcNow;
-                await memberService.UpdateAsync(created);
-            }
+            // Privacy consent recorded on Member before CreateAsync (see below)
 
             TempData["Success"] = $"Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach ({created.Email}).";
             return RedirectToPage("RegisterConfirmation", new { email = created.Email });
@@ -198,6 +197,12 @@ public class RegisterModel(
 
         try
         {
+            // Record privacy consent on Member before creating family members
+            if (PrivacyConsented)
+            {
+                Member.PrivacyConsentedAt = DateTime.UtcNow;
+            }
+
             // Create all family members
             var createdMembers = await memberService.CreateFamilyAsync(Member, subMembers, Member.Email);
 
@@ -213,12 +218,7 @@ public class RegisterModel(
                     inviteUrl);
             }
 
-            // Record privacy consent on main member
-            if (PrivacyConsented)
-            {
-                Member.PrivacyConsentedAt = DateTime.UtcNow;
-                await memberService.UpdateAsync(Member);
-            }
+            // Privacy consent recorded on Member before CreateAsync (see below)
 
             TempData["Success"] = $"{createdMembers.Count} Familienmitglieder wurden registriert.";
             return RedirectToPage("RegisterConfirmation", new { email = Member.Email });
