@@ -109,19 +109,9 @@ public class MemberValidator : AbstractValidator<Member>
         // Remaining chars must be alphanumeric
         if (!cleaned[4..].All(char.IsLetterOrDigit)) return false;
 
-        // Step 2: MOD-97 checksum (ISO 7064)
-        // Move first 4 characters to end, replace letters with numbers (A=10..Z=35),
-        // then calc mod 97 using modular arithmetic (avoids overflow).
-        var map = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        var rearranged = cleaned[4..] + cleaned[0..4];
-        int remainder = 0;
-        for (int i = 0; i < rearranged.Length; i++)
-        {
-            int value = map.IndexOf(rearranged[i]);
-            if (value < 0) return false; // invalid character
-            remainder = (remainder * 10 + value) % 97;
-        }
-
-        return remainder == 1;
+        // Step 2: MOD-97 checksum (ISO 7064) via IbanNet library
+        var validator = new IbanValidator();
+        var result = validator.Validate(cleaned);
+        return result.IsValid;
     }
 }
