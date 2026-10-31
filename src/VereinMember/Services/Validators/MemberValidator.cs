@@ -114,7 +114,7 @@ public class MemberValidator : AbstractValidator<Member>
         // then calc mod 97 using modular arithmetic (avoids overflow).
         var rearranged = cleaned[4..] + cleaned[0..4];
         var remainder = 0;
-        for (char ch in rearranged)
+        foreach (char ch in rearranged)
         {
             int value;
             if (char.IsDigit(ch))
