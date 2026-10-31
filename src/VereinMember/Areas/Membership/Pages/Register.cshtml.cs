@@ -148,7 +148,7 @@ public class RegisterModel(
                 // Legacy: send invitation email with magic link
                 var invitation = await invitationService.CreateInvitationAsync(created.Id, created.Email);
                 var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                                ?? $"/Membership/Activate?token=***}";
+                                ?? $"/Membership/Activate?token={invitation.Token}";
                 await accountService.SendInvitationEmailAsync(
                     created.Email,
                     $"{created.FirstName} {created.LastName}",
@@ -159,8 +159,7 @@ public class RegisterModel(
             if (PrivacyConsented)
             {
                 created.PrivacyConsentedAt = DateTime.UtcNow;
-                created.PrivacyConsentIp = Request.IpAddress;
-                await memberService.UpdateAsync(created, created.Email);
+                await memberService.UpdateAsync(created);
             }
 
             TempData["Success"] = $"Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach ({created.Email}).";
@@ -249,7 +248,7 @@ public class RegisterModel(
                 {
                     var invitation = await invitationService.CreateInvitationAsync(cm.Id, cm.Email);
                     var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                                    ?? $"/Membership/Activate?token=***}";
+                                    ?? $"/Membership/Activate?token={invitation.Token}";
 
                     await accountService.SendInvitationEmailAsync(
                         cm.Email,
@@ -262,8 +261,7 @@ public class RegisterModel(
             if (PrivacyConsented)
             {
                 Member.PrivacyConsentedAt = DateTime.UtcNow;
-                Member.PrivacyConsentIp = Request.IpAddress;
-                await memberService.UpdateAsync(Member, Member.Email);
+                await memberService.UpdateAsync(Member);
             }
 
             TempData["Success"] = $"{createdMembers.Count} Familienmitglieder wurden registriert.";
