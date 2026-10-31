@@ -8,7 +8,7 @@ namespace VereinMember.Areas.Membership.Pages;
 public class ActivateModel(
     IInvitationService invitationService,
     IMemberAccountService accountService,
-    Microsoft.AspNetCore.Identity.IUserManager userManager) : PageModel
+    Microsoft.AspNetCore.Identity.UserManager<MembershipUser> userManager) : PageModel
 {
     public string Token { get; set; } = string.Empty;
     public string MemberFirstName { get; set; } = string.Empty;
