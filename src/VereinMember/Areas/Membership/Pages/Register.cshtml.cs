@@ -134,7 +134,10 @@ public class RegisterModel(
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {ex.Message}");
+            var detail = ex.Message;
+            if (ex.InnerException != null)
+                detail += " | Inner: " + ex.InnerException.Message;
+            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {detail}");
             await LoadOptionsAsync();
             return Page();
         }
@@ -225,7 +228,10 @@ public class RegisterModel(
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {ex.Message}");
+            var detail = ex.Message;
+            if (ex.InnerException != null)
+                detail += " | Inner: " + ex.InnerException.Message;
+            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {detail}");
             await LoadOptionsAsync();
             return Page();
         }
