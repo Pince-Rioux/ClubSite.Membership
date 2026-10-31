@@ -195,8 +195,8 @@
 
             function toggleSections() {
                 const category = getSelectedFeeCategory();
-                guardianSection.style.display = (category === 'Youth') ? 'block' : 'none';
-                familySection.style.display = (category === 'Family') ? 'block' : 'none';
+                guardianSection.style.display = (category === '1') ? 'block' : 'none';
+                familySection.style.display = (category === '2') ? 'block' : 'none';
             }
 
             function addFamilyMemberRow() {
@@ -205,10 +205,10 @@
                 clone.removeAttribute('id');
 
                 const index = familyMemberIndex++;
-                clone.querySelectorAll('input').forEach(input => {
-                    const name = input.getAttribute('name');
+                clone.querySelectorAll('input, select').forEach(el => {
+                    const name = el.getAttribute('name');
                     if (name) {
-                        input.setAttribute('name', name.replace('INDEX', index));
+                        el.setAttribute('name', name.replace('INDEX', index));
                     }
                 });
 
