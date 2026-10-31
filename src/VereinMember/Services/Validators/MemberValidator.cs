@@ -112,16 +112,13 @@ public class MemberValidator : AbstractValidator<Member>
         // Step 2: MOD-97 checksum (ISO 7064)
         // Move first 4 characters to end, replace letters with numbers (A=10..Z=35),
         // then calc mod 97 using modular arithmetic (avoids overflow).
+        var map = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         var rearranged = cleaned[4..] + cleaned[0..4];
-        var remainder = 0;
-        foreach (char ch in rearranged)
+        int remainder = 0;
+        for (int i = 0; i < rearranged.Length; i++)
         {
-            int value;
-            if (char.IsDigit(ch))
-                value = ch - '0';
-            else
-                value = ch - 55; // A=10, B=11, ..., Z=35
-
+            int value = map.IndexOf(rearranged[i]);
+            if (value < 0) return false; // invalid character
             remainder = (remainder * 10 + value) % 97;
         }
 
