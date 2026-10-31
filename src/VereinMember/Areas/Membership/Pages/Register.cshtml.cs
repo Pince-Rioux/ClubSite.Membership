@@ -87,6 +87,17 @@ public class RegisterModel(
         // Compose BirthDate from cross-browser selects
         if (!TryComposeBirthDate()) return Page();
 
+        // Validate email uniqueness
+        var existingEmail = await context.Members
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Email == Member.Email);
+        if (existingEmail != null)
+        {
+            ModelState.AddModelError("Member.Email", "Diese E-Mail-Adresse wird bereits verwendet.");
+            await LoadOptionsAsync();
+            return Page();
+        }
+
         // Validate privacy consent
         if (!PrivacyConsented)
         {
@@ -152,6 +163,26 @@ public class RegisterModel(
         {
             if (error.PropertyName != "FamilyGroupId" && error.PropertyName != "GuardianMemberId")
                 ModelState.AddModelError($"Member.{error.PropertyName}", error.ErrorMessage);
+        }
+
+        // Validate email uniqueness
+        var existingEmail = await context.Members
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Email == Member.Email);
+        if (existingEmail != null)
+        {
+            ModelState.AddModelError("Member.Email", "Diese E-Mail-Adresse wird bereits verwendet.");
+            await LoadOptionsAsync();
+            return Page();
+        }
+
+        // Validate email uniqueness for main member
+        var existingEmail = await context.Members
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Email == Member.Email);
+        if (existingEmail != null)
+        {
+            ModelState.AddModelError("Member.Email", "Diese E-Mail-Adresse wird bereits verwendet.");
         }
 
         // Validate privacy consent
