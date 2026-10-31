@@ -56,12 +56,6 @@ public class RegisterModel(
     public List<FamilyMemberItem> FamilyMembers { get; set; } = [];
 
     [BindProperty]
-    public string? Password { get; set; }
-
-    [BindProperty]
-    public string? PasswordConfirm { get; set; }
-
-    [BindProperty]
     public bool PrivacyConsented { get; set; }
 
     public List<SelectListItem> FeeOptions { get; set; } = [];
@@ -101,23 +95,6 @@ public class RegisterModel(
             return Page();
         }
 
-        // Validate password (if provided)
-        if (!string.IsNullOrWhiteSpace(Password))
-        {
-            if (Password.Length < 8)
-            {
-                ModelState.AddModelError("Password", "Das Passwort muss mindestens 8 Zeichen lang sein.");
-                await LoadOptionsAsync();
-                return Page();
-            }
-            if (Password != PasswordConfirm)
-            {
-                ModelState.AddModelError("PasswordConfirm", "Die Passwörter stimmen nicht überein.");
-                await LoadOptionsAsync();
-                return Page();
-            }
-        }
-
         // Validate member
         var validationResult = await validator.ValidateAsync(Member);
         if (!validationResult.IsValid)
@@ -138,22 +115,13 @@ public class RegisterModel(
 
             var created = await memberService.CreateAsync(Member, Member.Email);
 
-            // Set password directly (if provided — replaces magic-link flow)
-            if (!string.IsNullOrWhiteSpace(Password))
-            {
-                await accountService.SetPasswordAsync(created.Email, Password);
-            }
-            else
-            {
-                // Legacy: send invitation email with magic link
-                var invitation = await invitationService.CreateInvitationAsync(created.Id, created.Email);
-                var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                                ?? $"/Membership/Activate?token={invitation.Token}";
-                await accountService.SendInvitationEmailAsync(
-                    created.Email,
-                    $"{created.FirstName} {created.LastName}",
-                    inviteUrl);
-            }
+            // Send invitation email with magic link
+            var invitation = await invitationService.CreateInvitationAsync(created.Id, created.Email);
+            var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token });
+            await accountService.SendInvitationEmailAsync(
+                created.Email,
+                $"{created.FirstName} {created.LastName}",
+                inviteUrl);
 
             // Record privacy consent
             if (PrivacyConsented)
@@ -233,28 +201,16 @@ public class RegisterModel(
             // Create all family members
             var createdMembers = await memberService.CreateFamilyAsync(Member, subMembers, Member.Email);
 
-            // Set password directly (if provided)
-            if (!string.IsNullOrWhiteSpace(Password))
+            // Create invitations for all family members
+            foreach (var cm in createdMembers)
             {
-                foreach (var cm in createdMembers)
-                {
-                    await accountService.SetPasswordAsync(cm.Email, Password);
-                }
-            }
-            else
-            {
-                // Create invitations for all family members
-                foreach (var cm in createdMembers)
-                {
-                    var invitation = await invitationService.CreateInvitationAsync(cm.Id, cm.Email);
-                    var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                                    ?? $"/Membership/Activate?token={invitation.Token}";
+                var invitation = await invitationService.CreateInvitationAsync(cm.Id, cm.Email);
+                var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token });
 
-                    await accountService.SendInvitationEmailAsync(
-                        cm.Email,
-                        $"{cm.FirstName} {cm.LastName}",
-                        inviteUrl);
-                }
+                await accountService.SendInvitationEmailAsync(
+                    cm.Email,
+                    $"{cm.FirstName} {cm.LastName}",
+                    inviteUrl);
             }
 
             // Record privacy consent on main member

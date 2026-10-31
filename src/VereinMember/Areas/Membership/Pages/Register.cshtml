@@ -5,7 +5,7 @@
 }
 
 <h1>Mitglied werden</h1>
-<p class="text-muted">Registrieren Sie sich als Mitglied des Volleyballclub Neusäß e. V.</p>
+<p class="text-muted">Registrieren Sie sich als Mitglied des Volleyballclub Neusäß e. V. Sie erhalten anschließend eine E-Mail mit einem Link zur Bestätigung und Passwort-Vergabe.</p>
 
 <form method="post" class="row g-3">
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -33,22 +33,6 @@
         <label asp-for="Member.Phone" class="form-label"></label>
         <input asp-for="Member.Phone" class="form-control" type="tel" />
         <span asp-validation-for="Member.Phone" class="text-danger"></span>
-    </div>
-
-    @* Password *@
-    <div class="col-md-6">
-        <label for="Password" class="form-label">Passwort</label>
-        <div class="input-group">
-            <input id="Password" name="Password" type="password" class="form-control" autocomplete="new-password" />
-            <button type="button" class="btn btn-outline-secondary" id="togglePassword" tabindex="-1">&#128065;</button>
-        </div>
-        <div class="form-text">Mindestens 8 Zeichen. Optional — falls leer, erhalten Sie einen Bestätigungslink per E-Mail.</div>
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="col-md-6">
-        <label for="PasswordConfirm" class="form-label">Passwort bestätigen</label>
-        <input id="PasswordConfirm" name="PasswordConfirm" type="password" class="form-control" autocomplete="new-password" />
-        <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
@@ -229,16 +213,6 @@
             const template = document.getElementById('familyMemberTemplate');
             const addBtn = document.getElementById('addFamilyMemberBtn');
             let familyMemberIndex = 0;
-
-            // Passwort show/hide toggle
-            const pwInput = document.getElementById('Password');
-            const pwToggle = document.getElementById('togglePassword');
-            if (pwToggle && pwInput) {
-                pwToggle.addEventListener('click', function () {
-                    const type = pwInput.getAttribute('type');
-                    pwInput.setAttribute('type', type === 'password' ? 'text' : 'password');
-                });
-            }
 
             function getSelectedFeeCategory() {
                 const selectedOption = feeSelect.options[feeSelect.selectedIndex];
