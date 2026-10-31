@@ -1,3 +1,5 @@
+using VereinMember.Models;
+using Microsoft.AspNetCore.Identity;
 using VereinMember.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,7 +9,8 @@ namespace VereinMember.Areas.Membership.Pages;
 [ValidateAntiForgeryToken]
 public class ActivateModel(
     IInvitationService invitationService,
-    IMemberAccountService accountService) : PageModel
+    IMemberAccountService accountService,
+    Microsoft.AspNetCore.Identity.UserManager<MembershipUser> userManager) : PageModel
 {
     public string Token { get; set; } = string.Empty;
     public string MemberFirstName { get; set; } = string.Empty;
@@ -68,6 +71,22 @@ public class ActivateModel(
         {
             ModelState.AddModelError(string.Empty, "Die Passwörter stimmen nicht überein.");
             return Page();
+        }
+
+        // Ensure Identity user exists, then set password
+        var identityUser = await userManager.FindByEmailAsync(invitation.Member.Email);
+        if (identityUser == null)
+        {
+            identityUser = new MembershipUser();
+            identityUser.Email = invitation.Member.Email;
+            identityUser.UserName = invitation.Member.Email;
+            var createResult = await userManager.CreateAsync(identityUser);
+            if (!createResult.Succeeded)
+            {
+                var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
+                ModelState.AddModelError(string.Empty, "Identity-User konnte nicht erstellt werden: " + errors);
+                return Page();
+            }
         }
 
         // Set password via host Identity

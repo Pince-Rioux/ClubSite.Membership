@@ -5,7 +5,7 @@
 }
 
 <h1>Mitglied werden</h1>
-<p class="text-muted">Registrieren Sie sich selbst — Sie erhalten anschließend eine E-Mail mit einem Link, um Ihr Passwort zu setzen.</p>
+<p class="text-muted">Registrieren Sie sich als Mitglied des Volleyballclub Neusäß e. V. Sie erhalten anschließend eine E-Mail mit einem Link zur Bestätigung und Passwort-Vergabe.</p>
 
 <form method="post" class="row g-3">
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -34,6 +34,7 @@
         <input asp-for="Member.Phone" class="form-control" type="tel" />
         <span asp-validation-for="Member.Phone" class="text-danger"></span>
     </div>
+
     <div class="col-md-6">
         <label class="form-label">Geburtsdatum</label>
         <div class="row g-1">
@@ -170,6 +171,33 @@
         <input asp-for="Member.Country" class="form-control" />
     </div>
 
+    @* Zahlungsinformationen *@
+    <div class="col-12 mt-3">
+        <h5 class="border-bottom pb-2">Zahlungsinformationen (optional)</h5>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.BankIban" class="form-label">IBAN</label>
+        <input asp-for="Member.BankIban" class="form-control" placeholder="DE00 0000 0000 0000 0000 00" />
+        <span asp-validation-for="Member.BankIban" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.BankBic" class="form-label">BIC</label>
+        <input asp-for="Member.BankBic" class="form-control" />
+        <div class="form-text">Für deutsche IBANs nicht erforderlich.</div>
+        <span asp-validation-for="Member.BankBic" class="text-danger"></span>
+    </div>
+
+    @* Datenschutz *@
+    <div class="col-12 mt-3">
+        <div class="form-check">
+            <input id="PrivacyConsented" name="PrivacyConsented" type="checkbox" class="form-check-input" value="true" />
+            <label class="form-check-label" for="PrivacyConsented">
+                Ich habe die <a href="/datenschutz" target="_blank">Datenschutzerklärung</a> zur Kenntnis genommen und stimme zu.
+            </label>
+            <span asp-validation-for="PrivacyConsented" class="text-danger"></span>
+        </div>
+    </div>
+
     <div class="col-12 mt-4">
         <button type="submit" class="btn btn-primary btn-lg">Registrieren</button>
         <a href="/" class="btn btn-outline-secondary btn-lg">Abbrechen</a>
@@ -195,8 +223,8 @@
 
             function toggleSections() {
                 const category = getSelectedFeeCategory();
-                guardianSection.style.display = (category === 'Youth') ? 'block' : 'none';
-                familySection.style.display = (category === 'Family') ? 'block' : 'none';
+                guardianSection.style.display = (category === '1') ? 'block' : 'none';
+                familySection.style.display = (category === '2') ? 'block' : 'none';
             }
 
             function addFamilyMemberRow() {
@@ -205,10 +233,10 @@
                 clone.removeAttribute('id');
 
                 const index = familyMemberIndex++;
-                clone.querySelectorAll('input').forEach(input => {
-                    const name = input.getAttribute('name');
+                clone.querySelectorAll('input, select').forEach(el => {
+                    const name = el.getAttribute('name');
                     if (name) {
-                        input.setAttribute('name', name.replace('INDEX', index));
+                        el.setAttribute('name', name.replace('INDEX', index));
                     }
                 });
 

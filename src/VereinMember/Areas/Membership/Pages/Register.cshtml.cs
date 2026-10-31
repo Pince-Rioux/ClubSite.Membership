@@ -55,6 +55,9 @@ public class RegisterModel(
     [BindProperty]
     public List<FamilyMemberItem> FamilyMembers { get; set; } = [];
 
+    [BindProperty]
+    public bool PrivacyConsented { get; set; }
+
     public List<SelectListItem> FeeOptions { get; set; } = [];
 
     public async Task OnGetAsync()
@@ -84,6 +87,25 @@ public class RegisterModel(
         // Compose BirthDate from cross-browser selects
         if (!TryComposeBirthDate()) return Page();
 
+        // Validate email uniqueness
+        var existingEmail = await context.Members
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Email == Member.Email);
+        if (existingEmail != null)
+        {
+            ModelState.AddModelError("Member.Email", "Diese E-Mail-Adresse wird bereits verwendet.");
+            await LoadOptionsAsync();
+            return Page();
+        }
+
+        // Validate privacy consent
+        if (!PrivacyConsented)
+        {
+            ModelState.AddModelError("PrivacyConsented", "Bitte stimmen Sie der Datenschutzerklärung zu.");
+            await LoadOptionsAsync();
+            return Page();
+        }
+
         // Validate member
         var validationResult = await validator.ValidateAsync(Member);
         if (!validationResult.IsValid)
@@ -101,27 +123,32 @@ public class RegisterModel(
             // Create the member
             Member.Status = MemberStatus.Active;
             Member.JoinedAt = DateTime.UtcNow;
+            if (PrivacyConsented)
+            {
+                Member.PrivacyConsentedAt = DateTime.UtcNow;
+            }
 
             var created = await memberService.CreateAsync(Member, Member.Email);
 
-            // Create invitation token
+            // Send invitation email with magic link
             var invitation = await invitationService.CreateInvitationAsync(created.Id, created.Email);
-
-            // Send invitation email
-            var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                            ?? $"/Membership/Activate?token={invitation.Token}";
-
+            var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token });
             await accountService.SendInvitationEmailAsync(
                 created.Email,
                 $"{created.FirstName} {created.LastName}",
                 inviteUrl);
 
-            TempData["Success"] = $"Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach ({created.Email}) und klicken Sie auf den Bestätigungslink.";
+            // Privacy consent recorded on Member before CreateAsync (see below)
+
+            TempData["Success"] = $"Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach ({created.Email}).";
             return RedirectToPage("RegisterConfirmation", new { email = created.Email });
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {ex.Message}");
+            var detail = ex.Message;
+            if (ex.InnerException != null)
+                detail += " | Inner: " + ex.InnerException.Message;
+            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {detail}");
             await LoadOptionsAsync();
             return Page();
         }
@@ -136,6 +163,23 @@ public class RegisterModel(
         {
             if (error.PropertyName != "FamilyGroupId" && error.PropertyName != "GuardianMemberId")
                 ModelState.AddModelError($"Member.{error.PropertyName}", error.ErrorMessage);
+        }
+
+        // Validate email uniqueness
+        var existingEmail = await context.Members
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Email == Member.Email);
+        if (existingEmail != null)
+        {
+            ModelState.AddModelError("Member.Email", "Diese E-Mail-Adresse wird bereits verwendet.");
+            await LoadOptionsAsync();
+            return Page();
+        }
+
+        // Validate privacy consent
+        if (!PrivacyConsented)
+        {
+            ModelState.AddModelError("PrivacyConsented", "Bitte stimmen Sie der Datenschutzerklärung zu.");
         }
 
         // Convert sub-members
@@ -178,6 +222,12 @@ public class RegisterModel(
 
         try
         {
+            // Record privacy consent on Member before creating family members
+            if (PrivacyConsented)
+            {
+                Member.PrivacyConsentedAt = DateTime.UtcNow;
+            }
+
             // Create all family members
             var createdMembers = await memberService.CreateFamilyAsync(Member, subMembers, Member.Email);
 
@@ -185,8 +235,7 @@ public class RegisterModel(
             foreach (var cm in createdMembers)
             {
                 var invitation = await invitationService.CreateInvitationAsync(cm.Id, cm.Email);
-                var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                                ?? $"/Membership/Activate?token={invitation.Token}";
+                var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token });
 
                 await accountService.SendInvitationEmailAsync(
                     cm.Email,
@@ -194,12 +243,17 @@ public class RegisterModel(
                     inviteUrl);
             }
 
-            TempData["Success"] = $"{createdMembers.Count} Familienmitglieder wurden registriert. Jedes Mitglied erhält eine E-Mail mit einem Bestätigungslink.";
+            // Privacy consent recorded on Member before CreateAsync (see below)
+
+            TempData["Success"] = $"{createdMembers.Count} Familienmitglieder wurden registriert.";
             return RedirectToPage("RegisterConfirmation", new { email = Member.Email });
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {ex.Message}");
+            var detail = ex.Message;
+            if (ex.InnerException != null)
+                detail += " | Inner: " + ex.InnerException.Message;
+            ModelState.AddModelError(string.Empty, $"Registrierung fehlgeschlagen: {detail}");
             await LoadOptionsAsync();
             return Page();
         }
