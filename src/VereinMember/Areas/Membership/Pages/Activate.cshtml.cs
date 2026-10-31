@@ -80,7 +80,7 @@ public class ActivateModel(
             identityUser = new MembershipUser();
             identityUser.Email = invitation.Member.Email;
             identityUser.UserName = invitation.Member.Email;
-            var createResult = await userManager.CreateUserAsync(identityUser);
+            var createResult = await userManager.CreateAsync(identityUser);
             if (!createResult.Succeeded)
             {
                 var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));

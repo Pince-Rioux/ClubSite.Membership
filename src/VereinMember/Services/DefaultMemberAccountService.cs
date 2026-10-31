@@ -33,7 +33,7 @@ public class DefaultMemberAccountService : IMemberAccountService
             user = new MembershipUser();
             user.Email = email;
             user.UserName = email;
-            var createResult = await _userManager.CreateUserAsync(user);
+            var createResult = await _userManager.CreateAsync(user);
             if (!createResult.Succeeded)
             {
                 _logger.LogError("SetPasswordAsync: failed to create Identity user for {Email}: {Errors}",
