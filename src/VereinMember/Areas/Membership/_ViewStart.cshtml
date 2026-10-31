@@ -6,12 +6,12 @@
 }
 
 @*
-    Load ClubSite assets as fallback in case the layout resolution context
-    from the RCL doesn't pick them up (Area views sometimes lose asset links).
+    ClubSite-CSS-Links direkt mit absoluten Pfaden.
+    Die Layout-Version mit ~/assets/... wird bei RCL-Pages nicht aufgelöst,
+    weil ClubSite's _ViewStart.cshtml diese Datei überschreibt und die
+    Tag-Helper für ~/ nicht im RCL-Kontext registriert sind.
 *@
-@section head {
-    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css" asp-append-version="true">
-    <link rel="stylesheet" href="~/assets/fonts/fonts-lato-raleway.css">
-    <link rel="stylesheet" href="~/assets/css/style.min.css" asp-append-version="true">
-    <link href="~/assets/css/fontawesome/fontawesome.min.css" asp-append-version="true" rel="stylesheet">
-}
+<link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="/assets/fonts/fonts-lato-raleway.css">
+<link rel="stylesheet" href="/assets/css/style.min.css">
+<link href="/assets/css/fontawesome/fontawesome.min.css" rel="stylesheet">
