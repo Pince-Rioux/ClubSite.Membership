@@ -183,6 +183,7 @@
     <div class="col-md-4">
         <label asp-for="Member.BankBic" class="form-label">BIC</label>
         <input asp-for="Member.BankBic" class="form-control" />
+        <div class="form-text">Für deutsche IBANs nicht erforderlich.</div>
         <span asp-validation-for="Member.BankBic" class="text-danger"></span>
     </div>
 
