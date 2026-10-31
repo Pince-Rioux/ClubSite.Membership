@@ -2,7 +2,6 @@
 @model VereinMember.Areas.Membership.Pages.LoginModel
 @{
     ViewData["Title"] = "Anmelden";
-    Layout = null; // clean page, no site chrome
 }
 
 <!DOCTYPE html>
@@ -113,7 +112,6 @@
             }
 
             <form method="post">
-                @Html.AntiForgeryToken()
                 <div class="form-group">
                     <label for="email">E-Mail</label>
                     <input id="email" name="email" type="email" class="form-control"
