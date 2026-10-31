@@ -176,15 +176,6 @@ public class RegisterModel(
             return Page();
         }
 
-        // Validate email uniqueness for main member
-        var existingEmail = await context.Members
-            .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.Email == Member.Email);
-        if (existingEmail != null)
-        {
-            ModelState.AddModelError("Member.Email", "Diese E-Mail-Adresse wird bereits verwendet.");
-        }
-
         // Validate privacy consent
         if (!PrivacyConsented)
         {
