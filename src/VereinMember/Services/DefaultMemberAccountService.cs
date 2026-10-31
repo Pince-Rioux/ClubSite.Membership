@@ -29,8 +29,18 @@ public class DefaultMemberAccountService : IMemberAccountService
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            _logger.LogWarning("SetPasswordAsync: no Identity user found for {Email}", email);
-            return false;
+            // Create Identity user for this email (first-time activation)
+            user = new MembershipUser();
+            user.Email = email;
+            user.UserName = email;
+            var createResult = await _userManager.CreateUserAsync(user);
+            if (!createResult.Succeeded)
+            {
+                _logger.LogError("SetPasswordAsync: failed to create Identity user for {Email}: {Errors}",
+                    email, string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                return false;
+            }
+            _logger.LogInformation("SetPasswordAsync: created Identity user for {Email}", email);
         }
 
         // Remove password if already set, then add new one
