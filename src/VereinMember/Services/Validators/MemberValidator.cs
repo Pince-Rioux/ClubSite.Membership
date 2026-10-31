@@ -98,10 +98,8 @@ public class MemberValidator : AbstractValidator<Member>
     {
         if (string.IsNullOrEmpty(iban)) return true;
 
-        // Basic IBAN format validation: 2 letters + 2 digits + up to 30 alphanumeric
-        if (iban.Length < 4 || iban.Length > 34) return false;
-
-        var cleaned = iban.Replace(" ", "").ToUpper();
+        // Step 1: Remove spaces, to uppercase
+        var cleaned = iban.Replace(" ", "").Replace("-", "").ToUpper();
         if (cleaned.Length < 4 || cleaned.Length > 34) return false;
 
         // Check first 2 chars are letters and next 2 are digits
@@ -109,6 +107,24 @@ public class MemberValidator : AbstractValidator<Member>
         if (!char.IsDigit(cleaned[2]) || !char.IsDigit(cleaned[3])) return false;
 
         // Remaining chars must be alphanumeric
-        return cleaned[4..].All(char.IsLetterOrDigit);
+        if (!cleaned[4..].All(char.IsLetterOrDigit)) return false;
+
+        // Step 2: MOD-97 checksum (ISO 7064)
+        // Move first 4 characters to end, replace letters with numbers (A=10..Z=35),
+        // then calc mod 97 using modular arithmetic (avoids overflow).
+        var rearranged = cleaned[4..] + cleaned[0..4];
+        var remainder = 0;
+        for (char ch in rearranged)
+        {
+            int value;
+            if (char.IsDigit(ch))
+                value = ch - '0';
+            else
+                value = ch - 55; // A=10, B=11, ..., Z=35
+
+            remainder = (remainder * 10 + value) % 97;
+        }
+
+        return remainder == 1;
     }
 }
