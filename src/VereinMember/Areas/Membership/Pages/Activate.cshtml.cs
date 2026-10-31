@@ -1,3 +1,5 @@
+using VereinMember.Models;
+using Microsoft.AspNetCore.Identity;
 using VereinMember.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
