@@ -38,6 +38,12 @@ public class Member
     public string? BankIban { get; set; }
     public string? BankBic { get; set; }
 
+    [Display(Name = "Datenschutz zugestimmt am")]
+    public DateTime? PrivacyConsentedAt { get; set; }
+
+    [Display(Name = "Datenschutz zugestimmt von IP")]
+    public string? PrivacyConsentIp { get; set; }
+
     [Display(Name = "Beigetreten am")]
     public DateTime JoinedAt { get; set; }
 

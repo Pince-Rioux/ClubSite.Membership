@@ -55,6 +55,15 @@ public class RegisterModel(
     [BindProperty]
     public List<FamilyMemberItem> FamilyMembers { get; set; } = [];
 
+    [BindProperty]
+    public string? Password { get; set; }
+
+    [BindProperty]
+    public string? PasswordConfirm { get; set; }
+
+    [BindProperty]
+    public bool PrivacyConsented { get; set; }
+
     public List<SelectListItem> FeeOptions { get; set; } = [];
 
     public async Task OnGetAsync()
@@ -84,6 +93,31 @@ public class RegisterModel(
         // Compose BirthDate from cross-browser selects
         if (!TryComposeBirthDate()) return Page();
 
+        // Validate privacy consent
+        if (!PrivacyConsented)
+        {
+            ModelState.AddModelError("PrivacyConsented", "Bitte stimmen Sie der Datenschutzerklärung zu.");
+            await LoadOptionsAsync();
+            return Page();
+        }
+
+        // Validate password (if provided)
+        if (!string.IsNullOrWhiteSpace(Password))
+        {
+            if (Password.Length < 8)
+            {
+                ModelState.AddModelError("Password", "Das Passwort muss mindestens 8 Zeichen lang sein.");
+                await LoadOptionsAsync();
+                return Page();
+            }
+            if (Password != PasswordConfirm)
+            {
+                ModelState.AddModelError("PasswordConfirm", "Die Passwörter stimmen nicht überein.");
+                await LoadOptionsAsync();
+                return Page();
+            }
+        }
+
         // Validate member
         var validationResult = await validator.ValidateAsync(Member);
         if (!validationResult.IsValid)
@@ -104,19 +138,32 @@ public class RegisterModel(
 
             var created = await memberService.CreateAsync(Member, Member.Email);
 
-            // Create invitation token
-            var invitation = await invitationService.CreateInvitationAsync(created.Id, created.Email);
+            // Set password directly (if provided — replaces magic-link flow)
+            if (!string.IsNullOrWhiteSpace(Password))
+            {
+                await accountService.SetPasswordAsync(created.Email, Password);
+            }
+            else
+            {
+                // Legacy: send invitation email with magic link
+                var invitation = await invitationService.CreateInvitationAsync(created.Id, created.Email);
+                var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
+                                ?? $"/Membership/Activate?token=***}";
+                await accountService.SendInvitationEmailAsync(
+                    created.Email,
+                    $"{created.FirstName} {created.LastName}",
+                    inviteUrl);
+            }
 
-            // Send invitation email
-            var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                            ?? $"/Membership/Activate?token={invitation.Token}";
+            // Record privacy consent
+            if (PrivacyConsented)
+            {
+                created.PrivacyConsentedAt = DateTime.UtcNow;
+                created.PrivacyConsentIp = Request.IpAddress;
+                await memberService.UpdateAsync(created, created.Email);
+            }
 
-            await accountService.SendInvitationEmailAsync(
-                created.Email,
-                $"{created.FirstName} {created.LastName}",
-                inviteUrl);
-
-            TempData["Success"] = $"Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach ({created.Email}) und klicken Sie auf den Bestätigungslink.";
+            TempData["Success"] = $"Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach ({created.Email}).";
             return RedirectToPage("RegisterConfirmation", new { email = created.Email });
         }
         catch (Exception ex)
@@ -136,6 +183,12 @@ public class RegisterModel(
         {
             if (error.PropertyName != "FamilyGroupId" && error.PropertyName != "GuardianMemberId")
                 ModelState.AddModelError($"Member.{error.PropertyName}", error.ErrorMessage);
+        }
+
+        // Validate privacy consent
+        if (!PrivacyConsented)
+        {
+            ModelState.AddModelError("PrivacyConsented", "Bitte stimmen Sie der Datenschutzerklärung zu.");
         }
 
         // Convert sub-members
@@ -181,20 +234,39 @@ public class RegisterModel(
             // Create all family members
             var createdMembers = await memberService.CreateFamilyAsync(Member, subMembers, Member.Email);
 
-            // Create invitations for all family members
-            foreach (var cm in createdMembers)
+            // Set password directly (if provided)
+            if (!string.IsNullOrWhiteSpace(Password))
             {
-                var invitation = await invitationService.CreateInvitationAsync(cm.Id, cm.Email);
-                var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
-                                ?? $"/Membership/Activate?token={invitation.Token}";
+                foreach (var cm in createdMembers)
+                {
+                    await accountService.SetPasswordAsync(cm.Email, Password);
+                }
+            }
+            else
+            {
+                // Create invitations for all family members
+                foreach (var cm in createdMembers)
+                {
+                    var invitation = await invitationService.CreateInvitationAsync(cm.Id, cm.Email);
+                    var inviteUrl = Url.PageLink("Activate", null, new { token = invitation.Token })
+                                    ?? $"/Membership/Activate?token=***}";
 
-                await accountService.SendInvitationEmailAsync(
-                    cm.Email,
-                    $"{cm.FirstName} {cm.LastName}",
-                    inviteUrl);
+                    await accountService.SendInvitationEmailAsync(
+                        cm.Email,
+                        $"{cm.FirstName} {cm.LastName}",
+                        inviteUrl);
+                }
             }
 
-            TempData["Success"] = $"{createdMembers.Count} Familienmitglieder wurden registriert. Jedes Mitglied erhält eine E-Mail mit einem Bestätigungslink.";
+            // Record privacy consent on main member
+            if (PrivacyConsented)
+            {
+                Member.PrivacyConsentedAt = DateTime.UtcNow;
+                Member.PrivacyConsentIp = Request.IpAddress;
+                await memberService.UpdateAsync(Member, Member.Email);
+            }
+
+            TempData["Success"] = $"{createdMembers.Count} Familienmitglieder wurden registriert.";
             return RedirectToPage("RegisterConfirmation", new { email = Member.Email });
         }
         catch (Exception ex)

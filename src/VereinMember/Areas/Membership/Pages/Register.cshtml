@@ -5,7 +5,7 @@
 }
 
 <h1>Mitglied werden</h1>
-<p class="text-muted">Registrieren Sie sich selbst — Sie erhalten anschließend eine E-Mail mit einem Link, um Ihr Passwort zu setzen.</p>
+<p class="text-muted">Registrieren Sie sich als Mitglied des Volleyballclub Neusäß e. V.</p>
 
 <form method="post" class="row g-3">
     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -34,6 +34,23 @@
         <input asp-for="Member.Phone" class="form-control" type="tel" />
         <span asp-validation-for="Member.Phone" class="text-danger"></span>
     </div>
+
+    @* Password *@
+    <div class="col-md-6">
+        <label for="Password" class="form-label">Passwort</label>
+        <div class="input-group">
+            <input id="Password" name="Password" type="password" class="form-control" autocomplete="new-password" />
+            <button type="button" class="btn btn-outline-secondary" id="togglePassword" tabindex="-1">&#128065;</button>
+        </div>
+        <div class="form-text">Mindestens 8 Zeichen. Optional — falls leer, erhalten Sie einen Bestätigungslink per E-Mail.</div>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label for="PasswordConfirm" class="form-label">Passwort bestätigen</label>
+        <input id="PasswordConfirm" name="PasswordConfirm" type="password" class="form-control" autocomplete="new-password" />
+        <span asp-validation-for="PasswordConfirm" class="text-danger"></span>
+    </div>
+
     <div class="col-md-6">
         <label class="form-label">Geburtsdatum</label>
         <div class="row g-1">
@@ -170,6 +187,32 @@
         <input asp-for="Member.Country" class="form-control" />
     </div>
 
+    @* Zahlungsinformationen *@
+    <div class="col-12 mt-3">
+        <h5 class="border-bottom pb-2">Zahlungsinformationen (optional)</h5>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Member.BankIban" class="form-label">IBAN</label>
+        <input asp-for="Member.BankIban" class="form-control" placeholder="DE00 0000 0000 0000 0000 00" />
+        <span asp-validation-for="Member.BankIban" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Member.BankBic" class="form-label">BIC</label>
+        <input asp-for="Member.BankBic" class="form-control" />
+        <span asp-validation-for="Member.BankBic" class="text-danger"></span>
+    </div>
+
+    @* Datenschutz *@
+    <div class="col-12 mt-3">
+        <div class="form-check">
+            <input id="PrivacyConsented" name="PrivacyConsented" type="checkbox" class="form-check-input" value="true" />
+            <label class="form-check-label" for="PrivacyConsented">
+                Ich habe die <a href="/datenschutz" target="_blank">Datenschutzerklärung</a> zur Kenntnis genommen und stimme zu.
+            </label>
+            <span asp-validation-for="PrivacyConsented" class="text-danger"></span>
+        </div>
+    </div>
+
     <div class="col-12 mt-4">
         <button type="submit" class="btn btn-primary btn-lg">Registrieren</button>
         <a href="/" class="btn btn-outline-secondary btn-lg">Abbrechen</a>
@@ -186,6 +229,16 @@
             const template = document.getElementById('familyMemberTemplate');
             const addBtn = document.getElementById('addFamilyMemberBtn');
             let familyMemberIndex = 0;
+
+            // Passwort show/hide toggle
+            const pwInput = document.getElementById('Password');
+            const pwToggle = document.getElementById('togglePassword');
+            if (pwToggle && pwInput) {
+                pwToggle.addEventListener('click', function () {
+                    const type = pwInput.getAttribute('type');
+                    pwInput.setAttribute('type', type === 'password' ? 'text' : 'password');
+                });
+            }
 
             function getSelectedFeeCategory() {
                 const selectedOption = feeSelect.options[feeSelect.selectedIndex];
